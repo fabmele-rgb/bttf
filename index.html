@@ -2,170 +2,121 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>BTTF Orologio</title>
 <style>
 @font-face {
   font-family: 'DSEG7';
-  src: url('https://fonts.cdnfonts.com/s/14886/DSEG7Classic-Regular.woff') format('woff2');
+  src: url('https://fonts.cdnfonts.com/s/14886/DSEG7Classic-Regular.woff') format('woff');
 }
-
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#111; font-family:'Courier New', monospace; padding:6px; max-width:720px; margin:0 auto; }
+html, body { height:100%; overflow:hidden; }
+body { background:#111; font-family:'Courier New',monospace; padding:4px; display:flex; flex-direction:column; }
 
-/* SPEED */
-.speed-box { text-align:center; margin-bottom:8px; padding:6px 4px; background:#0a0a0a; border:1px solid #333; border-radius:4px; }
-.speed { font-size:clamp(28px,9vw,52px); font-weight:bold; color:#00ff44; letter-spacing:4px; font-family:'DSEG7','Courier New',monospace; }
-.speed-label { font-size:11px; color:#ffb000; margin-top:2px; }
-.countdown { text-align:center; color:#ff3300; font-size:10px; margin:4px 0 6px; letter-spacing:1px; }
+/* TOP BAR velocità + GW + tempo */
+.top-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:#0a0a0a; border:1px solid #333; border-radius:4px;
+  padding:3px 8px; margin-bottom:3px; gap:6px;
+}
+.top-item { text-align:center; flex:1; }
+.top-value { font-family:'DSEG7','Courier New',monospace; font-size:clamp(16px,4vw,28px); font-weight:bold; line-height:1; }
+.top-label { font-size:clamp(7px,1.2vw,9px); letter-spacing:1px; margin-top:1px; }
+.top-divider { width:1px; background:#333; height:30px; }
+.speed-val { color:#00ff44; }
+.gw-val { color:#ff9900; }
+.time-val { color:#ff2200; }
+.speed-lbl { color:#00ff44; }
+.gw-lbl { color:#ff9900; }
+.time-lbl { color:#ff2200; }
+
+.countdown { text-align:center; color:#ff3300; font-size:clamp(8px,1.5vw,10px); margin:2px 0; letter-spacing:1px; }
 
 /* PANNELLO */
 .bttf-panel {
-  background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 15%, #2e2e2e 50%, #3a3a3a 85%, #4a4a4a 100%);
-  border: 3px solid #666;
-  border-radius: 6px;
-  margin-bottom: 5px;
-  padding: 6px 8px 5px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.5), 0 3px 8px rgba(0,0,0,0.8);
+  background:linear-gradient(180deg,#5a5a5a 0%,#3a3a3a 15%,#2e2e2e 50%,#3a3a3a 85%,#4a4a4a 100%);
+  border:2px solid #666; border-radius:5px; margin-bottom:3px; padding:3px 6px 2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 2px 6px rgba(0,0,0,0.8);
+  flex:1;
 }
-
-.labels-row { display:flex; margin-bottom:4px; padding:0 2px; }
+.labels-row { display:flex; margin-bottom:2px; }
 .label-cell { flex:1; text-align:center; }
 .label-cell.year-cell { flex:1.6; }
 .label-cell.ampm-cell { flex:0.45; }
 .label-cell.small-cell { flex:0.85; }
+.label-tag { display:inline-block; background:#5a0000; color:#ddd; font-size:clamp(5px,1.2vw,8px); font-weight:bold; letter-spacing:1px; padding:1px 3px; border:1px solid #800000; border-radius:2px; text-transform:uppercase; }
 
-.label-tag {
-  display:inline-block; background:#5a0000; color:#ddd;
-  font-size:clamp(6px,1.5vw,9px); font-weight:bold; letter-spacing:1px;
-  padding:1px 4px; border:1px solid #800000; border-radius:2px; text-transform:uppercase;
-}
-
-.display-row { display:flex; align-items:center; gap:3px; }
-
-.digit-box {
-  flex:1; background:#000; border:2px solid #222; border-radius:3px;
-  padding:4px 2px; text-align:center; box-shadow:inset 0 0 8px rgba(0,0,0,0.9);
-}
+.display-row { display:flex; align-items:center; gap:2px; }
+.digit-box { flex:1; background:#000; border:1px solid #222; border-radius:2px; padding:2px 1px; text-align:center; box-shadow:inset 0 0 6px rgba(0,0,0,0.9); }
 .digit-box.year-box { flex:1.6; }
 .digit-box.small-box { flex:0.85; }
 
-/* FLICKER LED */
 @keyframes flicker {
-  0%,17%,19%,21%,23%,51%,57%,100% { opacity:1; }
-  18% { opacity:0.2; }
-  20% { opacity:0.9; }
-  22% { opacity:0.1; }
-  52% { opacity:0.3; }
-  53% { opacity:1; }
-  54% { opacity:0.2; }
-  56% { opacity:1; }
+  0%,17%,19%,21%,23%,51%,57%,100%{opacity:1;}
+  18%{opacity:0.2;} 20%{opacity:0.9;} 22%{opacity:0.1;} 52%{opacity:0.3;} 54%{opacity:0.2;} 56%{opacity:1;}
 }
+.digit { font-family:'DSEG7','Courier New',monospace; font-size:clamp(16px,4.5vw,36px); font-weight:bold; letter-spacing:1px; line-height:1; display:block; animation:flicker 7s infinite; }
+.red .digit { animation-delay:0.1s; }
+.green .digit { animation-delay:0.5s; }
+.amber .digit { animation-delay:0.9s; }
 
-.digit {
-  font-family: 'DSEG7', 'Courier New', monospace;
-  font-size: clamp(22px, 6vw, 42px);
-  font-weight: bold;
-  letter-spacing: 2px;
-  line-height: 1;
-  display: block;
-  animation: flicker 7s infinite;
-}
-.red .digit { animation-delay: 0.1s; }
-.green .digit { animation-delay: 0.5s; }
-.amber .digit { animation-delay: 0.9s; }
-
-.ampm-box { flex:0.45; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:0 2px; border-right:1px solid #333; }
-.ampm-row { display:flex; align-items:center; gap:3px; }
-.ampm-dot { width:clamp(6px,1.5vw,10px); height:clamp(6px,1.5vw,10px); border-radius:50%; border:1px solid #333; }
-.ampm-label { font-size:clamp(7px,1.5vw,10px); font-weight:bold; color:#888; }
-
-.colon-sep { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px; padding:0 1px; }
-.colon-dot { width:clamp(4px,1vw,6px); height:clamp(4px,1vw,6px); border-radius:50%; }
-
-.panel-title { text-align:center; margin-top:5px; font-size:clamp(8px,2vw,11px); font-weight:bold; letter-spacing:clamp(2px,0.5vw,5px); color:#fff; text-transform:uppercase; background:rgba(0,0,0,0.3); padding:2px 0; border-top:1px solid #555; }
+.ampm-box { flex:0.45; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:0 1px; }
+.ampm-row { display:flex; align-items:center; gap:2px; }
+.ampm-dot { width:clamp(5px,1.2vw,8px); height:clamp(5px,1.2vw,8px); border-radius:50%; border:1px solid #333; }
+.ampm-label { font-size:clamp(6px,1.2vw,9px); font-weight:bold; color:#888; }
+.colon-sep { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; padding:0 1px; }
+.colon-dot { width:clamp(3px,0.8vw,5px); height:clamp(3px,0.8vw,5px); border-radius:50%; }
+.panel-title { text-align:center; font-size:clamp(6px,1.5vw,9px); font-weight:bold; letter-spacing:clamp(2px,0.5vw,4px); color:#fff; text-transform:uppercase; background:rgba(0,0,0,0.3); padding:1px 0; border-top:1px solid #555; margin-top:2px; }
 
 /* COLORI */
-.red .digit { color:#ff3300; text-shadow:0 0 10px #ff3300, 0 0 20px #ff2200; }
+.red .digit { color:#ff3300; text-shadow:0 0 8px #ff3300; }
 .red .digit-box { background:#050000; }
-.red .ampm-dot.on { background:#ff3300; box-shadow:0 0 6px #ff3300; border-color:#ff3300; }
+.red .ampm-dot.on { background:#ff3300; box-shadow:0 0 5px #ff3300; border-color:#ff3300; }
 .red .ampm-dot.off { background:#1a0000; }
-.red .colon-dot { background:#ff3300; box-shadow:0 0 4px #ff3300; }
+.red .colon-dot { background:#ff3300; box-shadow:0 0 3px #ff3300; }
 .red .label-tag { background:#5a0000; border-color:#800000; }
 
-.green .digit { color:#00ff44; text-shadow:0 0 10px #00ff44, 0 0 20px #00dd33; }
+.green .digit { color:#00ff44; text-shadow:0 0 8px #00ff44; }
 .green .digit-box { background:#000500; }
-.green .ampm-dot.on { background:#00ff44; box-shadow:0 0 6px #00ff44; border-color:#00ff44; }
+.green .ampm-dot.on { background:#00ff44; box-shadow:0 0 5px #00ff44; border-color:#00ff44; }
 .green .ampm-dot.off { background:#001a00; }
-.green .colon-dot { background:#00ff44; box-shadow:0 0 4px #00ff44; }
+.green .colon-dot { background:#00ff44; box-shadow:0 0 3px #00ff44; }
 .green .label-tag { background:#005a00; border-color:#008000; }
 
-.amber .digit { color:#ffaa00; text-shadow:0 0 10px #ffaa00, 0 0 20px #ff8800; }
+.amber .digit { color:#ffaa00; text-shadow:0 0 8px #ffaa00; }
 .amber .digit-box { background:#050200; }
-.amber .ampm-dot.on { background:#ffaa00; box-shadow:0 0 6px #ffaa00; border-color:#ffaa00; }
+.amber .ampm-dot.on { background:#ffaa00; box-shadow:0 0 5px #ffaa00; border-color:#ffaa00; }
 .amber .ampm-dot.off { background:#1a0a00; }
-.amber .colon-dot { background:#ffaa00; box-shadow:0 0 4px #ffaa00; }
+.amber .colon-dot { background:#ffaa00; box-shadow:0 0 3px #ffaa00; }
 .amber .label-tag { background:#5a3000; border-color:#804000; }
 
-/* PULSANTI GRANDI */
-.btn {
-  border:2px solid; padding:18px 16px; font-family:'Courier New',monospace;
-  font-size:13px; font-weight:bold; cursor:pointer; border-radius:4px;
-  width:100%; margin-bottom:7px; letter-spacing:2px; background:transparent; text-transform:uppercase;
-}
+/* PULSANTI AFFIANCATI */
+.btn-row { display:flex; gap:4px; margin-top:3px; }
+.btn { border:2px solid; padding:8px 4px; font-family:'Courier New',monospace; font-size:clamp(8px,1.5vw,11px); font-weight:bold; cursor:pointer; border-radius:4px; flex:1; letter-spacing:1px; background:transparent; text-transform:uppercase; }
 .btn-red { color:#ff3300; border-color:#ff3300; }
 .btn-amber { color:#ffaa00; border-color:#ffaa00; }
 .btn-red:active { background:#1a0000; }
 .btn-amber:active { background:#1a0a00; }
 
-/* LANDSCAPE */
-@media (orientation:landscape) {
-  body { padding:3px; }
-  .bttf-panel { margin-bottom:3px; padding:4px 6px 3px; }
-  .digit { font-size:clamp(18px,5vw,36px) !important; }
-  .speed { font-size:clamp(20px,5vw,36px) !important; }
-  .speed-box { padding:3px; margin-bottom:3px; }
-  .countdown { margin:2px 0 3px; font-size:9px; }
-  .panel-title { font-size:7px; padding:1px 0; margin-top:2px; }
-  .btn { padding:12px 16px; margin-bottom:4px; }
-}
-
 /* MODAL */
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:100; align-items:center; justify-content:center; }
 .modal.open { display:flex; }
-.modal-box { background:#1a0a00; border:2px solid #5a3a00; border-radius:8px; padding:20px; width:92%; max-width:380px; }
-.modal-title { color:#ffaa00; font-size:12px; letter-spacing:3px; margin-bottom:16px; text-align:center; }
+.modal-box { background:#1a0a00; border:2px solid #5a3a00; border-radius:8px; padding:16px; width:92%; max-width:380px; }
+.modal-title { color:#ffaa00; font-size:12px; letter-spacing:3px; margin-bottom:12px; text-align:center; }
 .form-row { display:flex; gap:8px; margin-bottom:10px; }
 .form-group { flex:1; }
 .form-group label { display:block; color:#666; font-size:9px; letter-spacing:1px; margin-bottom:3px; }
 .form-group input, .form-group select { width:100%; background:#0d0500; border:1px solid #5a3a00; color:#ffaa00; font-family:'Courier New',monospace; font-size:14px; padding:8px; border-radius:4px; }
-.modal-btns { display:flex; gap:8px; margin-top:14px; }
-.modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:14px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; letter-spacing:2px; font-size:14px; }
+.modal-btns { display:flex; gap:8px; margin-top:12px; }
+.modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:14px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; font-size:14px; }
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:14px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; font-size:14px; }
 
-/* TIME TRAVEL OVERLAY */
-#timeTravelOverlay {
-  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-  z-index:999; align-items:center; justify-content:center; flex-direction:column;
-  pointer-events:none;
-}
+/* TIME TRAVEL */
+#timeTravelOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:999; align-items:center; justify-content:center; flex-direction:column; pointer-events:none; }
 #timeTravelOverlay.active { display:flex; animation:overlayFlash 4s ease-in-out forwards; }
-@keyframes overlayFlash {
-  0%{background:rgba(255,255,255,0);}
-  10%{background:rgba(255,255,255,0.95);}
-  25%{background:rgba(255,50,0,0.4);}
-  40%{background:rgba(255,255,255,0.95);}
-  55%{background:rgba(0,255,68,0.3);}
-  70%{background:rgba(255,255,255,0.95);}
-  85%{background:rgba(255,170,0,0.3);}
-  100%{background:rgba(255,255,255,0);}
-}
-#timeTravelText {
-  font-size:clamp(20px,7vw,48px); font-weight:bold; color:#ff2200;
-  text-shadow:0 0 20px #ff2200; letter-spacing:4px; text-align:center;
-  animation:textPulse 0.3s ease-in-out infinite;
-}
-#timeTravelEmoji { font-size:clamp(36px,10vw,72px); margin-bottom:10px; animation:emojiSpin 0.5s linear infinite; }
+@keyframes overlayFlash { 0%{background:rgba(255,255,255,0);} 10%{background:rgba(255,255,255,0.95);} 25%{background:rgba(255,50,0,0.4);} 40%{background:rgba(255,255,255,0.95);} 55%{background:rgba(0,255,68,0.3);} 70%{background:rgba(255,255,255,0.95);} 85%{background:rgba(255,170,0,0.3);} 100%{background:rgba(255,255,255,0);} }
+#timeTravelText { font-size:clamp(18px,6vw,42px); font-weight:bold; color:#ff2200; text-shadow:0 0 20px #ff2200; letter-spacing:4px; text-align:center; animation:textPulse 0.3s ease-in-out infinite; }
+#timeTravelEmoji { font-size:clamp(30px,8vw,60px); margin-bottom:8px; animation:emojiSpin 0.5s linear infinite; }
 @keyframes textPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
 @keyframes emojiSpin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
 .spinning .digit { animation:digitFlash 0.08s linear infinite !important; color:#fff !important; text-shadow:0 0 20px #fff !important; }
@@ -174,14 +125,27 @@ body { background:#111; font-family:'Courier New', monospace; padding:6px; max-w
 </head>
 <body>
 
-<div class="speed-box">
-  <div class="speed" id="speed">-- km/h</div>
-  <div class="speed-label" id="speedLabel">Velocita GPS non disponibile</div>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-item">
+    <div class="top-value speed-val" id="speed">--</div>
+    <div class="top-label speed-lbl">km/h</div>
+  </div>
+  <div class="top-divider"></div>
+  <div class="top-item">
+    <div class="top-value gw-val" id="gwDisplay">0.00</div>
+    <div class="top-label gw-lbl">GigaWatt</div>
+  </div>
+  <div class="top-divider"></div>
+  <div class="top-item">
+    <div class="top-value time-val" id="timeToDisplay">--</div>
+    <div class="top-label time-lbl">sec a 88</div>
+  </div>
 </div>
 
 <div class="countdown" id="countdown"></div>
 
-<!-- DESTINATION TIME (rosso) -->
+<!-- DESTINATION TIME -->
 <div class="bttf-panel red">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -207,7 +171,7 @@ body { background:#111; font-family:'Courier New', monospace; padding:6px; max-w
   <div class="panel-title">Destination Time</div>
 </div>
 
-<!-- PRESENT TIME (verde) -->
+<!-- PRESENT TIME -->
 <div class="bttf-panel green">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -233,7 +197,7 @@ body { background:#111; font-family:'Courier New', monospace; padding:6px; max-w
   <div class="panel-title">Present Time</div>
 </div>
 
-<!-- LAST TIME DEPARTED (ambra) -->
+<!-- LAST TIME DEPARTED -->
 <div class="bttf-panel amber">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -259,8 +223,11 @@ body { background:#111; font-family:'Courier New', monospace; padding:6px; max-w
   <div class="panel-title">Last Time Departed</div>
 </div>
 
-<button class="btn btn-red" onclick="openModal('dest')">&#9889; Imposta DESTINATION TIME</button>
-<button class="btn btn-amber" onclick="openModal('last')">&#128336; Imposta LAST TIME DEPARTED</button>
+<!-- PULSANTI AFFIANCATI -->
+<div class="btn-row">
+  <button class="btn btn-red" onclick="openModal('dest')">&#9889; DESTINATION</button>
+  <button class="btn btn-amber" onclick="openModal('last')">&#128336; LAST DEPARTED</button>
+</div>
 
 <!-- MODAL -->
 <div class="modal" id="modal">
@@ -317,6 +284,9 @@ function pad(n){ return String(n).padStart(2,'0'); }
 var dest = JSON.parse(localStorage.getItem('bttf_dest') || '{"m":11,"d":5,"y":1955,"h":6,"min":0}');
 var last = JSON.parse(localStorage.getItem('bttf_last') || '{"m":10,"d":26,"y":1985,"h":1,"min":21}');
 var editingWhich = 'dest';
+var currentSpeed = 0;
+var lastSpeed = 0;
+var lastSpeedTime = Date.now();
 
 function setPanel(prefix, data) {
   var h = data.h === 0 ? 12 : data.h > 12 ? data.h - 12 : data.h;
@@ -326,8 +296,8 @@ function setPanel(prefix, data) {
   document.getElementById(prefix+'Year').textContent = data.y;
   document.getElementById(prefix+'Hour').textContent = pad(h);
   document.getElementById(prefix+'Min').textContent = pad(data.min);
-  document.getElementById(prefix+'AmDot').className = 'ampm-dot ' + (isAm ? 'on' : 'off');
-  document.getElementById(prefix+'PmDot').className = 'ampm-dot ' + (!isAm ? 'on' : 'off');
+  document.getElementById(prefix+'AmDot').className = 'ampm-dot '+(isAm?'on':'off');
+  document.getElementById(prefix+'PmDot').className = 'ampm-dot '+(!isAm?'on':'off');
 }
 
 function updatePresent() {
@@ -339,9 +309,50 @@ function updatePresent() {
   var days = Math.floor(abs/86400000);
   var hours = Math.floor((abs%86400000)/3600000);
   var mins = Math.floor((abs%3600000)/60000);
-  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano '+days+' giorni, '+hours+' ore e '+mins+' minuti alla destinazione';
-  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di '+days+' giorni, '+hours+' ore e '+mins+' minuti';
+  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano '+days+'g '+hours+'h '+mins+'m alla destinazione';
+  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di '+days+'g '+hours+'h '+mins+'m';
   else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
+}
+
+function updateSpeedDisplay(kmh) {
+  currentSpeed = kmh;
+  document.getElementById('speed').textContent = Math.round(kmh);
+
+  // GigaWatt — scala da 0 a 1.21 GW tra 0 e 88 km/h
+  var gw = Math.min(1.21, (kmh / 88) * 1.21);
+  document.getElementById('gwDisplay').textContent = gw.toFixed(2);
+
+  // Tempo stimato a 88 km/h basato sull'accelerazione attuale
+  var now = Date.now();
+  var dt = (now - lastSpeedTime) / 1000;
+  if (dt > 0.5 && kmh < 88) {
+    var accel = (kmh - lastSpeed) / dt; // km/h per secondo
+    if (accel > 0.1) {
+      var secTo88 = (88 - kmh) / accel;
+      document.getElementById('timeToDisplay').textContent = Math.round(secTo88);
+    } else {
+      document.getElementById('timeToDisplay').textContent = '--';
+    }
+  } else if (kmh >= 88) {
+    document.getElementById('timeToDisplay').textContent = '00';
+  }
+  lastSpeed = kmh;
+  lastSpeedTime = now;
+
+  // Colori
+  if (kmh >= 88) {
+    document.getElementById('speed').style.color = '#ff2200';
+    document.getElementById('gwDisplay').style.color = '#ff2200';
+    document.getElementById('timeToDisplay').style.color = '#ff2200';
+    triggerTimeTravel();
+  } else if (kmh >= 70) {
+    document.getElementById('speed').style.color = '#ffaa00';
+    document.getElementById('gwDisplay').style.color = '#ffaa00';
+  } else {
+    document.getElementById('speed').style.color = '#00ff44';
+    document.getElementById('gwDisplay').style.color = '#ff9900';
+    document.getElementById('timeToDisplay').style.color = '#ff2200';
+  }
 }
 
 function openModal(which) {
@@ -355,31 +366,14 @@ function openModal(which) {
   document.getElementById('inMin').value = data.min;
   document.getElementById('modal').classList.add('open');
 }
-
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
 function saveModal() {
-  var data = {
-    m: parseInt(document.getElementById('inMonth').value),
-    d: parseInt(document.getElementById('inDay').value),
-    y: parseInt(document.getElementById('inYear').value),
-    h: parseInt(document.getElementById('inHour').value),
-    min: parseInt(document.getElementById('inMin').value)
-  };
-  if (editingWhich === 'dest') {
-    dest = data;
-    localStorage.setItem('bttf_dest', JSON.stringify(data));
-    setPanel('d', data);
-  } else {
-    last = data;
-    localStorage.setItem('bttf_last', JSON.stringify(data));
-    setPanel('l', data);
-  }
-  closeModal();
-  updatePresent();
+  var data = { m:parseInt(document.getElementById('inMonth').value), d:parseInt(document.getElementById('inDay').value), y:parseInt(document.getElementById('inYear').value), h:parseInt(document.getElementById('inHour').value), min:parseInt(document.getElementById('inMin').value) };
+  if (editingWhich === 'dest') { dest=data; localStorage.setItem('bttf_dest',JSON.stringify(data)); setPanel('d',data); }
+  else { last=data; localStorage.setItem('bttf_last',JSON.stringify(data)); setPanel('l',data); }
+  closeModal(); updatePresent();
 }
 
-// TIME TRAVEL ANIMATION
 var timeTravelPlaying = false;
 function triggerTimeTravel() {
   if (timeTravelPlaying) return;
@@ -402,60 +396,27 @@ function triggerTimeTravel() {
       if (count > 20) {
         clearInterval(interval);
         panels.forEach(function(p){ p.classList.remove('spinning'); });
-        setPanel('d', dest);
-        setPanel('l', last);
-        updatePresent();
+        setPanel('d',dest); setPanel('l',last); updatePresent();
       }
     }, 100);
   }, 300);
-  setTimeout(function() {
-    overlay.classList.remove('active');
-    timeTravelPlaying = false;
-  }, 4500);
+  setTimeout(function() { overlay.classList.remove('active'); timeTravelPlaying = false; }, 4500);
 }
 
-// SCHERMO SEMPRE ACCESO
 async function keepScreenOn() {
-  try {
-    if ('wakeLock' in navigator) {
-      var wakeLock = await navigator.wakeLock.request('screen');
-      document.addEventListener('visibilitychange', async function() {
-        if (document.visibilityState === 'visible') {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      });
-    }
-  } catch(e) {}
+  try { if ('wakeLock' in navigator) { await navigator.wakeLock.request('screen'); } } catch(e) {}
 }
 keepScreenOn();
 
-// GPS
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(function(pos) {
     if (pos.coords.speed !== null) {
-      var kmh = Math.round(pos.coords.speed * 3.6);
-      document.getElementById('speed').textContent = kmh + ' km/h';
-      if (kmh >= 88) {
-        document.getElementById('speed').style.color = '#ff2200';
-        document.getElementById('speedLabel').textContent = 'VIAGGIO NEL TEMPO IN CORSO!';
-        document.getElementById('speedLabel').style.color = '#ff2200';
-        triggerTimeTravel();
-      } else if (kmh >= 70) {
-        document.getElementById('speed').style.color = '#ffaa00';
-        document.getElementById('speedLabel').textContent = 'Mancano '+(88-kmh)+' km/h alla destinazione temporale!';
-        document.getElementById('speedLabel').style.color = '#ffaa00';
-      } else {
-        document.getElementById('speed').style.color = '#00ff44';
-        document.getElementById('speedLabel').textContent = (88-kmh)+' km/h alla destinazione temporale';
-        document.getElementById('speedLabel').style.color = '#ffb000';
-      }
+      updateSpeedDisplay(pos.coords.speed * 3.6);
     }
   }, null, {enableHighAccuracy:true});
 }
 
-setPanel('d', dest);
-setPanel('l', last);
-updatePresent();
+setPanel('d', dest); setPanel('l', last); updatePresent();
 setInterval(updatePresent, 1000);
 </script>
 </body>
