@@ -5,44 +5,187 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BTTF Orologio</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DSEG7+Classic&display=swap');
+
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#0d0500; font-family:monospace; padding:8px; }
-.panel { border:2px solid #3d1a00; border-radius:6px; padding:10px; margin-bottom:6px; }
-.row { display:flex; justify-content:space-between; align-items:center; }
-.cell { text-align:center; flex:1; }
-.label { font-size:9px; color:#666; letter-spacing:1px; text-transform:uppercase; }
-.value { font-size:clamp(18px, 5vw, 36px); font-weight:bold; letter-spacing:2px; }
-.ampm-box { display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight:bold; gap:4px; }
-.title { font-size:10px; color:#999; letter-spacing:3px; text-align:center; margin-top:6px; text-transform:uppercase; }
-.red .value { color:#ff2200; }
-.red .ampm-on { color:#ff2200; }
-.red .ampm-off { color:#1a0500; }
-.green .value { color:#00ff44; }
-.green .ampm-on { color:#00ff44; }
-.green .ampm-off { color:#001a08; }
-.amber .value { color:#ffb000; }
-.amber .ampm-on { color:#ffb000; }
-.amber .ampm-off { color:#1a0800; }
-.speed-box { text-align:center; margin-bottom:10px; }
-.speed { color:#00ff44; font-size:clamp(32px, 10vw, 56px); font-weight:bold; }
-.speed-label { color:#ffb000; font-size:12px; margin-top:4px; }
-.countdown { text-align:center; color:#ff2200; font-size:11px; margin:4px 0 10px; }
-.btn { background:#1a0800; border:2px solid; padding:8px 16px; font-family:monospace; font-size:13px; font-weight:bold; cursor:pointer; border-radius:4px; width:100%; margin-bottom:6px; }
-.btn-red { color:#ff2200; border-color:#ff2200; }
-.btn-amber { color:#ffb000; border-color:#ffb000; }
-.btn-red:hover { background:#330500; }
-.btn-amber:hover { background:#331a00; }
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; align-items:center; justify-content:center; }
+body {
+  background:#1a1a1a;
+  font-family: 'Courier New', monospace;
+  padding:6px;
+  max-width:720px;
+  margin:0 auto;
+}
+
+/* SPEED */
+.speed-box { text-align:center; margin-bottom:8px; padding:6px 4px; background:#0a0a0a; border:1px solid #333; border-radius:4px; }
+.speed { font-size:clamp(28px,9vw,52px); font-weight:bold; color:#00ff44; letter-spacing:4px; font-family:'Courier New',monospace; }
+.speed-label { font-size:11px; color:#ffb000; margin-top:2px; }
+.countdown { text-align:center; color:#ff3300; font-size:10px; margin:4px 0 6px; letter-spacing:1px; }
+
+/* PANNELLO PRINCIPALE */
+.bttf-panel {
+  background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 15%, #2e2e2e 50%, #3a3a3a 85%, #4a4a4a 100%);
+  border: 3px solid #666;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  padding: 6px 8px 5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    0 3px 8px rgba(0,0,0,0.8);
+}
+
+/* RIGA LABEL in alto */
+.labels-row {
+  display: flex;
+  margin-bottom: 4px;
+  padding: 0 2px;
+}
+.label-cell {
+  flex: 1;
+  text-align: center;
+}
+.label-cell.year-cell { flex: 1.6; }
+.label-cell.ampm-cell { flex: 0.45; }
+.label-cell.small-cell { flex: 0.85; }
+
+.label-tag {
+  display: inline-block;
+  background: #5a0000;
+  color: #ddd;
+  font-size: clamp(6px, 1.5vw, 9px);
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 1px 4px;
+  border: 1px solid #800000;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* RIGA DISPLAY */
+.display-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.digit-box {
+  flex: 1;
+  background: #000;
+  border: 2px solid #222;
+  border-radius: 3px;
+  padding: 4px 2px;
+  text-align: center;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.9);
+  position: relative;
+}
+.digit-box.year-box { flex: 1.6; }
+.digit-box.small-box { flex: 0.85; }
+
+.digit {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(24px, 7vw, 48px);
+  font-weight: bold;
+  letter-spacing: 2px;
+  line-height: 1;
+  display: block;
+}
+
+/* AM/PM pallini */
+.ampm-box {
+  flex: 0.45;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 2px;
+}
+.ampm-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.ampm-dot {
+  width: clamp(6px, 1.5vw, 10px);
+  height: clamp(6px, 1.5vw, 10px);
+  border-radius: 50%;
+  border: 1px solid #333;
+}
+.ampm-label {
+  font-size: clamp(7px, 1.5vw, 10px);
+  font-weight: bold;
+  color: #888;
+  letter-spacing: 0;
+}
+
+/* Separatore : tra HOUR e MIN */
+.colon-sep {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 0 1px;
+}
+.colon-dot {
+  width: clamp(4px,1vw,6px);
+  height: clamp(4px,1vw,6px);
+  border-radius: 50%;
+}
+
+/* Label in basso */
+.panel-title {
+  text-align: center;
+  margin-top: 5px;
+  font-size: clamp(8px, 2vw, 11px);
+  font-weight: bold;
+  letter-spacing: clamp(2px, 0.5vw, 5px);
+  color: #ffffff;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.3);
+  padding: 2px 0;
+  border-top: 1px solid #555;
+}
+
+/* COLORI per pannello */
+.red .digit { color: #ff3300; text-shadow: 0 0 10px #ff3300, 0 0 20px #ff2200; }
+.red .ampm-dot.on { background: #ff3300; box-shadow: 0 0 6px #ff3300; border-color: #ff3300; }
+.red .ampm-dot.off { background: #1a0000; }
+.red .colon-dot { color: #ff3300; background: #ff3300; box-shadow: 0 0 4px #ff3300; }
+.red .label-tag { background:#5a0000; border-color:#800000; }
+
+.green .digit { color: #00ff44; text-shadow: 0 0 10px #00ff44, 0 0 20px #00dd33; }
+.green .ampm-dot.on { background: #00ff44; box-shadow: 0 0 6px #00ff44; border-color: #00ff44; }
+.green .ampm-dot.off { background: #001a00; }
+.green .colon-dot { background: #00ff44; box-shadow: 0 0 4px #00ff44; }
+.green .label-tag { background:#005a00; border-color:#008000; }
+
+.amber .digit { color: #ffaa00; text-shadow: 0 0 10px #ffaa00, 0 0 20px #ff8800; }
+.amber .ampm-dot.on { background: #ffaa00; box-shadow: 0 0 6px #ffaa00; border-color: #ffaa00; }
+.amber .ampm-dot.off { background: #1a0a00; }
+.amber .colon-dot { background: #ffaa00; box-shadow: 0 0 4px #ffaa00; }
+.amber .label-tag { background:#5a3000; border-color:#804000; }
+
+/* PULSANTI */
+.btn { border:2px solid; padding:8px; font-family:'Courier New',monospace; font-size:11px; font-weight:bold; cursor:pointer; border-radius:4px; width:100%; margin-bottom:5px; letter-spacing:2px; background:transparent; text-transform:uppercase; }
+.btn-red { color:#ff3300; border-color:#ff3300; }
+.btn-amber { color:#ffaa00; border-color:#ffaa00; }
+.btn-red:active { background:#1a0000; }
+.btn-amber:active { background:#1a0a00; }
+
+/* MODAL */
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:100; align-items:center; justify-content:center; }
 .modal.open { display:flex; }
-.modal-box { background:#1a0800; border:2px solid #3d1a00; border-radius:8px; padding:20px; width:90%; max-width:400px; }
-.modal-title { color:#ffb000; font-size:14px; letter-spacing:2px; margin-bottom:16px; text-align:center; }
-.form-row { display:flex; gap:8px; margin-bottom:12px; }
+.modal-box { background:#1a0a00; border:2px solid #5a3a00; border-radius:8px; padding:20px; width:92%; max-width:380px; }
+.modal-title { color:#ffaa00; font-size:12px; letter-spacing:3px; margin-bottom:16px; text-align:center; }
+.form-row { display:flex; gap:8px; margin-bottom:10px; }
 .form-group { flex:1; }
-.form-group label { display:block; color:#666; font-size:10px; letter-spacing:1px; margin-bottom:4px; }
-.form-group input, .form-group select { width:100%; background:#0d0500; border:1px solid #3d1a00; color:#ffb000; font-family:monospace; font-size:14px; padding:6px; border-radius:4px; }
-.modal-btns { display:flex; gap:8px; margin-top:16px; }
-.modal-save { flex:1; background:#ff2200; color:#000; border:none; padding:10px; font-family:monospace; font-weight:bold; cursor:pointer; border-radius:4px; }
-.modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:10px; font-family:monospace; cursor:pointer; border-radius:4px; }
+.form-group label { display:block; color:#666; font-size:9px; letter-spacing:1px; margin-bottom:3px; }
+.form-group input, .form-group select { width:100%; background:#0d0500; border:1px solid #5a3a00; color:#ffaa00; font-family:'Courier New',monospace; font-size:14px; padding:6px; border-radius:4px; }
+.modal-btns { display:flex; gap:8px; margin-top:14px; }
+.modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:10px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; letter-spacing:2px; }
+.modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:10px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; }
 </style>
 </head>
 <body>
@@ -54,46 +197,87 @@ body { background:#0d0500; font-family:monospace; padding:8px; }
 
 <div class="countdown" id="countdown"></div>
 
-<div class="panel red">
-  <div class="row">
-    <div class="cell"><div class="label">MONTH</div><div class="value" id="dMonth">NOV</div></div>
-    <div class="cell"><div class="label">DAY</div><div class="value" id="dDay">05</div></div>
-    <div class="cell"><div class="label">YEAR</div><div class="value" id="dYear">1955</div></div>
-    <div class="cell"><div class="ampm-box"><span id="dAm" class="ampm-on">AM</span><span id="dPm" class="ampm-off">PM</span></div></div>
-    <div class="cell"><div class="label">HOUR</div><div class="value" id="dHour">06</div></div>
-    <div class="cell"><div class="label">MIN</div><div class="value" id="dMin">00</div></div>
+<!-- DESTINATION TIME (rosso) -->
+<div class="bttf-panel red" id="panelDest">
+  <div class="labels-row">
+    <div class="label-cell"><span class="label-tag">MONTH</span></div>
+    <div class="label-cell"><span class="label-tag">DAY</span></div>
+    <div class="label-cell year-cell"><span class="label-tag">YEAR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">HOUR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">MIN</span></div>
   </div>
-  <div class="title">Destination Time</div>
+  <div class="display-row">
+    <div class="digit-box"><span class="digit" id="dMonth">NOV</span></div>
+    <div class="digit-box"><span class="digit" id="dDay">05</span></div>
+    <div class="digit-box year-box"><span class="digit" id="dYear">1955</span></div>
+    <div class="ampm-box">
+      <div class="ampm-row"><div class="ampm-dot on" id="dAmDot"></div><span class="ampm-label">AM</span></div>
+      <div class="ampm-row"><div class="ampm-dot off" id="dPmDot"></div><span class="ampm-label">PM</span></div>
+    </div>
+    <div class="digit-box small-box"><span class="digit" id="dHour">06</span></div>
+    <div class="colon-sep"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <div class="digit-box small-box"><span class="digit" id="dMin">00</span></div>
+  </div>
+  <div class="panel-title">Destination Time</div>
 </div>
 
-<div class="panel green">
-  <div class="row">
-    <div class="cell"><div class="label">MONTH</div><div class="value" id="pMonth">---</div></div>
-    <div class="cell"><div class="label">DAY</div><div class="value" id="pDay">--</div></div>
-    <div class="cell"><div class="label">YEAR</div><div class="value" id="pYear">----</div></div>
-    <div class="cell"><div class="ampm-box"><span id="pAm" class="ampm-on">AM</span><span id="pPm" class="ampm-off">PM</span></div></div>
-    <div class="cell"><div class="label">HOUR</div><div class="value" id="pHour">--</div></div>
-    <div class="cell"><div class="label">MIN</div><div class="value" id="pMin">--</div></div>
+<!-- PRESENT TIME (verde) -->
+<div class="bttf-panel green" id="panelPresent">
+  <div class="labels-row">
+    <div class="label-cell"><span class="label-tag">MONTH</span></div>
+    <div class="label-cell"><span class="label-tag">DAY</span></div>
+    <div class="label-cell year-cell"><span class="label-tag">YEAR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">HOUR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">MIN</span></div>
   </div>
-  <div class="title">Present Time</div>
+  <div class="display-row">
+    <div class="digit-box"><span class="digit" id="pMonth">---</span></div>
+    <div class="digit-box"><span class="digit" id="pDay">--</span></div>
+    <div class="digit-box year-box"><span class="digit" id="pYear">----</span></div>
+    <div class="ampm-box">
+      <div class="ampm-row"><div class="ampm-dot off" id="pAmDot"></div><span class="ampm-label">AM</span></div>
+      <div class="ampm-row"><div class="ampm-dot on" id="pPmDot"></div><span class="ampm-label">PM</span></div>
+    </div>
+    <div class="digit-box small-box"><span class="digit" id="pHour">--</span></div>
+    <div class="colon-sep"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <div class="digit-box small-box"><span class="digit" id="pMin">--</span></div>
+  </div>
+  <div class="panel-title">Present Time</div>
 </div>
 
-<div class="panel amber">
-  <div class="row">
-    <div class="cell"><div class="label">MONTH</div><div class="value" id="lMonth">OCT</div></div>
-    <div class="cell"><div class="label">DAY</div><div class="value" id="lDay">26</div></div>
-    <div class="cell"><div class="label">YEAR</div><div class="value" id="lYear">1985</div></div>
-    <div class="cell"><div class="ampm-box"><span id="lAm" class="ampm-on">AM</span><span id="lPm" class="ampm-off">PM</span></div></div>
-    <div class="cell"><div class="label">HOUR</div><div class="value" id="lHour">01</div></div>
-    <div class="cell"><div class="label">MIN</div><div class="value" id="lMin">21</div></div>
+<!-- LAST TIME DEPARTED (ambra) -->
+<div class="bttf-panel amber" id="panelLast">
+  <div class="labels-row">
+    <div class="label-cell"><span class="label-tag">MONTH</span></div>
+    <div class="label-cell"><span class="label-tag">DAY</span></div>
+    <div class="label-cell year-cell"><span class="label-tag">YEAR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">HOUR</span></div>
+    <div class="label-cell ampm-cell"></div>
+    <div class="label-cell small-cell"><span class="label-tag">MIN</span></div>
   </div>
-  <div class="title">Last Time Departed</div>
+  <div class="display-row">
+    <div class="digit-box"><span class="digit" id="lMonth">OCT</span></div>
+    <div class="digit-box"><span class="digit" id="lDay">26</span></div>
+    <div class="digit-box year-box"><span class="digit" id="lYear">1985</span></div>
+    <div class="ampm-box">
+      <div class="ampm-row"><div class="ampm-dot on" id="lAmDot"></div><span class="ampm-label">AM</span></div>
+      <div class="ampm-row"><div class="ampm-dot off" id="lPmDot"></div><span class="ampm-label">PM</span></div>
+    </div>
+    <div class="digit-box small-box"><span class="digit" id="lHour">01</span></div>
+    <div class="colon-sep"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <div class="digit-box small-box"><span class="digit" id="lMin">21</span></div>
+  </div>
+  <div class="panel-title">Last Time Departed</div>
 </div>
 
 <button class="btn btn-red" onclick="openModal('dest')">⚡ Imposta DESTINATION TIME</button>
 <button class="btn btn-amber" onclick="openModal('last')">🕐 Imposta LAST TIME DEPARTED</button>
 
-<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <div class="modal-title" id="modalTitle">IMPOSTA DATA</div>
@@ -151,28 +335,28 @@ function setPanel(prefix, data) {
   document.getElementById(prefix+'Year').textContent = data.y;
   document.getElementById(prefix+'Hour').textContent = pad(h);
   document.getElementById(prefix+'Min').textContent = pad(data.min);
-  document.getElementById(prefix+'Am').className = isAm ? 'ampm-on' : 'ampm-off';
-  document.getElementById(prefix+'Pm').className = !isAm ? 'ampm-on' : 'ampm-off';
+  document.getElementById(prefix+'AmDot').className = 'ampm-dot ' + (isAm ? 'on' : 'off');
+  document.getElementById(prefix+'PmDot').className = 'ampm-dot ' + (!isAm ? 'on' : 'off');
 }
 
 function updatePresent() {
   const now = new Date();
-  setPanel('p', {m: now.getMonth()+1, d: now.getDate(), y: now.getFullYear(), h: now.getHours(), min: now.getMinutes()});
+  setPanel('p', {m:now.getMonth()+1, d:now.getDate(), y:now.getFullYear(), h:now.getHours(), min:now.getMinutes()});
   const destDate = new Date(dest.y, dest.m-1, dest.d, dest.h, dest.min);
   const diff = destDate - now;
   const abs = Math.abs(diff);
-  const days = Math.floor(abs / 86400000);
-  const hours = Math.floor((abs % 86400000) / 3600000);
-  const mins = Math.floor((abs % 3600000) / 60000);
-  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano ' + days + ' giorni, ' + hours + ' ore e ' + mins + ' minuti alla destinazione';
-  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di ' + days + ' giorni, ' + hours + ' ore e ' + mins + ' minuti';
-  else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
+  const days = Math.floor(abs/86400000);
+  const hours = Math.floor((abs%86400000)/3600000);
+  const mins = Math.floor((abs%3600000)/60000);
+  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano '+days+' giorni, '+hours+' ore e '+mins+' minuti alla destinazione';
+  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di '+days+' giorni, '+hours+' ore e '+mins+' minuti';
+  else document.getElementById('countdown').textContent = '⚡ Sei arrivato alla destinazione!';
 }
 
 function openModal(which) {
   editingWhich = which;
   const data = which === 'dest' ? dest : last;
-  document.getElementById('modalTitle').textContent = which === 'dest' ? 'DESTINATION TIME' : 'LAST TIME DEPARTED';
+  document.getElementById('modalTitle').textContent = which === 'dest' ? '⚡ DESTINATION TIME' : '🕐 LAST TIME DEPARTED';
   document.getElementById('inMonth').value = data.m;
   document.getElementById('inDay').value = data.d;
   document.getElementById('inYear').value = data.y;
@@ -181,29 +365,13 @@ function openModal(which) {
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
 function saveModal() {
-  const data = {
-    m: parseInt(document.getElementById('inMonth').value),
-    d: parseInt(document.getElementById('inDay').value),
-    y: parseInt(document.getElementById('inYear').value),
-    h: parseInt(document.getElementById('inHour').value),
-    min: parseInt(document.getElementById('inMin').value)
-  };
-  if (editingWhich === 'dest') {
-    dest = data;
-    localStorage.setItem('bttf_dest', JSON.stringify(data));
-    setPanel('d', data);
-  } else {
-    last = data;
-    localStorage.setItem('bttf_last', JSON.stringify(data));
-    setPanel('l', data);
-  }
-  closeModal();
-  updatePresent();
+  const data = { m:parseInt(document.getElementById('inMonth').value), d:parseInt(document.getElementById('inDay').value), y:parseInt(document.getElementById('inYear').value), h:parseInt(document.getElementById('inHour').value), min:parseInt(document.getElementById('inMin').value) };
+  if (editingWhich === 'dest') { dest=data; localStorage.setItem('bttf_dest',JSON.stringify(data)); setPanel('d',data); }
+  else { last=data; localStorage.setItem('bttf_last',JSON.stringify(data)); setPanel('l',data); }
+  closeModal(); updatePresent();
 }
 
 setPanel('d', dest);
@@ -216,19 +384,11 @@ if (navigator.geolocation) {
     if (pos.coords.speed !== null) {
       const kmh = Math.round(pos.coords.speed * 3.6);
       document.getElementById('speed').textContent = kmh + ' km/h';
-      if (kmh >= 88) {
-        document.getElementById('speed').style.color = '#ff2200';
-        document.getElementById('speedLabel').textContent = 'VIAGGIO NEL TEMPO IN CORSO!';
-        document.getElementById('speedLabel').style.color = '#ff2200';
-      } else if (kmh >= 70) {
-        document.getElementById('speed').style.color = '#ffb000';
-        document.getElementById('speedLabel').textContent = 'Mancano ' + (88-kmh) + ' km/h alla destinazione temporale!';
-      } else {
-        document.getElementById('speed').style.color = '#00ff44';
-        document.getElementById('speedLabel').textContent = (88-kmh) + ' km/h alla destinazione temporale';
-      }
+      if (kmh >= 88) { document.getElementById('speed').style.color='#ff2200'; document.getElementById('speedLabel').textContent='⚡ VIAGGIO NEL TEMPO IN CORSO! ⚡'; document.getElementById('speedLabel').style.color='#ff2200'; }
+      else if (kmh >= 70) { document.getElementById('speed').style.color='#ffaa00'; document.getElementById('speedLabel').textContent='Mancano '+(88-kmh)+' km/h!'; }
+      else { document.getElementById('speed').style.color='#00ff44'; document.getElementById('speedLabel').textContent=(88-kmh)+' km/h alla destinazione temporale'; }
     }
-  }, null, {enableHighAccuracy: true});
+  }, null, {enableHighAccuracy:true});
 }
 </script>
 </body>
