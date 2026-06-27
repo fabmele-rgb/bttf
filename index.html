@@ -188,25 +188,31 @@ body {
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:10px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; }
 
 #timeTravelOverlay {
-  display:none;
-  position:fixed;
-  top:0;left:0;width:100%;height:100%;
-  z-index:999;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  font-family:monospace;
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  z-index:999; align-items:center; justify-content:center; flex-direction:column;
 }
-#timeTravelOverlay.active {
-  display:flex;
-  animation: overlayFlash 4s ease-in-out forwards;
-}
+#timeTravelOverlay.active { display:flex; animation:overlayFlash 4s ease-in-out forwards; }
 @keyframes overlayFlash {
-  0%,100% { background:rgba(255,255,255,0); }
-  10%,30%,50%,70% { background:rgba(255,255,255,0.95); }
-  20%,60% { background:rgba(255,50,0,0.4); }
-  40%,80% { background:rgba(0,255,68,0.3); }
+  0%{background:rgba(255,255,255,0);}
+  10%{background:rgba(255,255,255,0.95);}
+  25%{background:rgba(255,50,0,0.4);}
+  40%{background:rgba(255,255,255,0.95);}
+  55%{background:rgba(0,255,68,0.3);}
+  70%{background:rgba(255,255,255,0.95);}
+  85%{background:rgba(255,170,0,0.3);}
+  100%{background:rgba(255,255,255,0);}
 }
+#timeTravelText {
+  font-size:clamp(20px,7vw,48px); font-weight:bold; color:#ff2200;
+  text-shadow:0 0 20px #ff2200; letter-spacing:4px; text-align:center;
+  animation:textPulse 0.3s ease-in-out infinite;
+}
+#timeTravelEmoji { font-size:clamp(36px,10vw,72px); margin-bottom:10px; animation:emojiSpin 0.5s linear infinite; }
+@keyframes textPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
+@keyframes emojiSpin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+.spinning .digit { animation:digitFlash 0.1s linear infinite; }
+@keyframes digitFlash { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
 </style>
 </head>
 <body>
@@ -405,37 +411,11 @@ if (navigator.geolocation) {
     if (pos.coords.speed !== null) {
       const kmh = Math.round(pos.coords.speed * 3.6);
       document.getElementById('speed').textContent = kmh + ' km/h';
-      if (kmh >= 88) { document.getElementById('speed').style.color='#ff2200'; document.getElementById('speedLabel').textContent='⚡ VIAGGIO NEL TEMPO IN CORSO! ⚡'; document.getElementById('speedLabel').style.color='#ff2200'; }
+      if (kmh >= 88) { document.getElementById('speed').style.color='#ff2200'; document.getElementById('speedLabel').textContent='⚡ VIAGGIO NEL TEMPO IN CORSO! ⚡'; triggerTimeTravel(); document.getElementById('speedLabel').style.color='#ff2200'; }
       else if (kmh >= 70) { document.getElementById('speed').style.color='#ffaa00'; document.getElementById('speedLabel').textContent='Mancano '+(88-kmh)+' km/h!'; }
       else { document.getElementById('speed').style.color='#00ff44'; document.getElementById('speedLabel').textContent=(88-kmh)+' km/h alla destinazione temporale'; }
     }
   }, null, {enableHighAccuracy:true});
-}
-  let timeTravelPlaying = false;
-
-function triggerTimeTravel() {
-  if (timeTravelPlaying) return;
-  timeTravelPlaying = true;
-  const overlay = document.getElementById('timeTravelOverlay');
-  overlay.classList.add('active');
-  setTimeout(() => {
-    const digits = document.querySelectorAll('.digit');
-    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    const nums = ['00','11','22','33','44','55','66','77','88','99'];
-    let count = 0;
-    const interval = setInterval(() => {
-      digits.forEach(d => {
-        if (d.textContent.match(/[0-9]/)) d.textContent = nums[Math.floor(Math.random()*nums.length)];
-        else d.textContent = months[Math.floor(Math.random()*months.length)];
-      });
-      count++;
-      if (count > 15) {
-        clearInterval(interval);
-        setPanel('d', dest); setPanel('l', last); updatePresent();
-      }
-    }, 100);
-  }, 500);
-  setTimeout(() => { overlay.classList.remove('active'); timeTravelPlaying = false; }, 4000);
 }
 
 var timeTravelPlaying = false;
@@ -444,37 +424,40 @@ function triggerTimeTravel() {
   timeTravelPlaying = true;
   var overlay = document.getElementById('timeTravelOverlay');
   overlay.classList.add('active');
+  var panels = document.querySelectorAll('.bttf-panel');
   var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   var nums = ['00','11','22','33','44','55','66','77','88','99'];
-  var digits = document.querySelectorAll('.digit');
-  var count = 0;
-  var interval = setInterval(function() {
-    digits.forEach(function(d) {
-      if (/[0-9]/.test(d.textContent)) d.textContent = nums[Math.floor(Math.random()*nums.length)];
-      else d.textContent = months[Math.floor(Math.random()*months.length)];
-    });
-    count++;
-    if (count > 20) {
-      clearInterval(interval);
-      setPanel('d', dest);
-      setPanel('l', last);
-      updatePresent();
-    }
-  }, 100);
+  setTimeout(function() {
+    panels.forEach(function(p){ p.classList.add('spinning'); });
+    var digits = document.querySelectorAll('.digit');
+    var count = 0;
+    var interval = setInterval(function() {
+      digits.forEach(function(d) {
+        if (d.textContent.match(/[0-9]/)) d.textContent = nums[Math.floor(Math.random()*nums.length)];
+        else d.textContent = months[Math.floor(Math.random()*months.length)];
+      });
+      count++;
+      if (count > 20) {
+        clearInterval(interval);
+        panels.forEach(function(p){ p.classList.remove('spinning'); });
+        setPanel('d', dest);
+        setPanel('l', last);
+        updatePresent();
+      }
+    }, 100);
+  }, 300);
   setTimeout(function() {
     overlay.classList.remove('active');
     timeTravelPlaying = false;
-  }, 4000);
+  }, 4500);
 }
+
 </script>
-<div id="timeTravelOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;align-items:center;justify-content:center;flex-direction:column;font-family:monospace;">
-  <div style="font-size:60px;">⚡</div>
-  <div style="font-size:32px;font-weight:bold;color:#ff2200;letter-spacing:4px;text-align:center;">VIAGGIO NEL TEMPO!</div>
-</div>
 
 <div id="timeTravelOverlay">
-  <div style="font-size:clamp(40px,12vw,80px);">&#9889;</div>
-  <div style="font-size:clamp(20px,6vw,40px);font-weight:bold;color:#ff2200;letter-spacing:4px;text-align:center;text-shadow:0 0 20px #ff2200;">VIAGGIO NEL TEMPO!</div>
+  <div id="timeTravelEmoji">&#9889;</div>
+  <div id="timeTravelText">VIAGGIO NEL TEMPO!</div>
 </div>
+
 </body>
 </html>
