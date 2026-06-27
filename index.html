@@ -27,6 +27,22 @@ body { background:#0d0500; font-family:monospace; padding:8px; }
 .speed { color:#00ff44; font-size:clamp(32px, 10vw, 56px); font-weight:bold; }
 .speed-label { color:#ffb000; font-size:12px; margin-top:4px; }
 .countdown { text-align:center; color:#ff2200; font-size:11px; margin:4px 0 10px; }
+.btn { background:#1a0800; border:2px solid; padding:8px 16px; font-family:monospace; font-size:13px; font-weight:bold; cursor:pointer; border-radius:4px; width:100%; margin-bottom:6px; }
+.btn-red { color:#ff2200; border-color:#ff2200; }
+.btn-amber { color:#ffb000; border-color:#ffb000; }
+.btn-red:hover { background:#330500; }
+.btn-amber:hover { background:#331a00; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; align-items:center; justify-content:center; }
+.modal.open { display:flex; }
+.modal-box { background:#1a0800; border:2px solid #3d1a00; border-radius:8px; padding:20px; width:90%; max-width:400px; }
+.modal-title { color:#ffb000; font-size:14px; letter-spacing:2px; margin-bottom:16px; text-align:center; }
+.form-row { display:flex; gap:8px; margin-bottom:12px; }
+.form-group { flex:1; }
+.form-group label { display:block; color:#666; font-size:10px; letter-spacing:1px; margin-bottom:4px; }
+.form-group input, .form-group select { width:100%; background:#0d0500; border:1px solid #3d1a00; color:#ffb000; font-family:monospace; font-size:14px; padding:6px; border-radius:4px; }
+.modal-btns { display:flex; gap:8px; margin-top:16px; }
+.modal-save { flex:1; background:#ff2200; color:#000; border:none; padding:10px; font-family:monospace; font-weight:bold; cursor:pointer; border-radius:4px; }
+.modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:10px; font-family:monospace; cursor:pointer; border-radius:4px; }
 </style>
 </head>
 <body>
@@ -38,7 +54,7 @@ body { background:#0d0500; font-family:monospace; padding:8px; }
 
 <div class="countdown" id="countdown"></div>
 
-<div class="panel red" id="panelDest">
+<div class="panel red">
   <div class="row">
     <div class="cell"><div class="label">MONTH</div><div class="value" id="dMonth">NOV</div></div>
     <div class="cell"><div class="label">DAY</div><div class="value" id="dDay">05</div></div>
@@ -74,13 +90,58 @@ body { background:#0d0500; font-family:monospace; padding:8px; }
   <div class="title">Last Time Departed</div>
 </div>
 
+<button class="btn btn-red" onclick="openModal('dest')">⚡ Imposta DESTINATION TIME</button>
+<button class="btn btn-amber" onclick="openModal('last')">🕐 Imposta LAST TIME DEPARTED</button>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">IMPOSTA DATA</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>MESE</label>
+        <select id="inMonth">
+          <option value="1">JAN</option><option value="2">FEB</option>
+          <option value="3">MAR</option><option value="4">APR</option>
+          <option value="5">MAY</option><option value="6">JUN</option>
+          <option value="7">JUL</option><option value="8">AUG</option>
+          <option value="9">SEP</option><option value="10">OCT</option>
+          <option value="11">NOV</option><option value="12">DEC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>GIORNO</label>
+        <input type="number" id="inDay" min="1" max="31" value="1">
+      </div>
+      <div class="form-group">
+        <label>ANNO</label>
+        <input type="number" id="inYear" min="1885" max="2085" value="1985">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>ORA (0-23)</label>
+        <input type="number" id="inHour" min="0" max="23" value="0">
+      </div>
+      <div class="form-group">
+        <label>MINUTI</label>
+        <input type="number" id="inMin" min="0" max="59" value="0">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">ANNULLA</button>
+      <button class="modal-save" onclick="saveModal()">SALVA</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 function pad(n){ return String(n).padStart(2,'0'); }
 
-// Destination e Last Departed salvati in localStorage
-let dest = JSON.parse(localStorage.getItem('dest') || '{"m":11,"d":5,"y":1955,"h":6,"min":0}');
-let last = JSON.parse(localStorage.getItem('last') || '{"m":10,"d":26,"y":1985,"h":1,"min":21}');
+let dest = JSON.parse(localStorage.getItem('bttf_dest') || '{"m":11,"d":5,"y":1955,"h":6,"min":0}');
+let last = JSON.parse(localStorage.getItem('bttf_last') || '{"m":10,"d":26,"y":1985,"h":1,"min":21}');
+let editingWhich = 'dest';
 
 function setPanel(prefix, data) {
   const h = data.h === 0 ? 12 : data.h > 12 ? data.h - 12 : data.h;
@@ -97,8 +158,6 @@ function setPanel(prefix, data) {
 function updatePresent() {
   const now = new Date();
   setPanel('p', {m: now.getMonth()+1, d: now.getDate(), y: now.getFullYear(), h: now.getHours(), min: now.getMinutes()});
-
-  // Countdown
   const destDate = new Date(dest.y, dest.m-1, dest.d, dest.h, dest.min);
   const diff = destDate - now;
   const abs = Math.abs(diff);
@@ -110,12 +169,48 @@ function updatePresent() {
   else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
 }
 
+function openModal(which) {
+  editingWhich = which;
+  const data = which === 'dest' ? dest : last;
+  document.getElementById('modalTitle').textContent = which === 'dest' ? 'DESTINATION TIME' : 'LAST TIME DEPARTED';
+  document.getElementById('inMonth').value = data.m;
+  document.getElementById('inDay').value = data.d;
+  document.getElementById('inYear').value = data.y;
+  document.getElementById('inHour').value = data.h;
+  document.getElementById('inMin').value = data.min;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function saveModal() {
+  const data = {
+    m: parseInt(document.getElementById('inMonth').value),
+    d: parseInt(document.getElementById('inDay').value),
+    y: parseInt(document.getElementById('inYear').value),
+    h: parseInt(document.getElementById('inHour').value),
+    min: parseInt(document.getElementById('inMin').value)
+  };
+  if (editingWhich === 'dest') {
+    dest = data;
+    localStorage.setItem('bttf_dest', JSON.stringify(data));
+    setPanel('d', data);
+  } else {
+    last = data;
+    localStorage.setItem('bttf_last', JSON.stringify(data));
+    setPanel('l', data);
+  }
+  closeModal();
+  updatePresent();
+}
+
 setPanel('d', dest);
 setPanel('l', last);
 updatePresent();
 setInterval(updatePresent, 1000);
 
-// GPS velocita
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(function(pos) {
     if (pos.coords.speed !== null) {
