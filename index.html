@@ -202,8 +202,12 @@ body {
 
 /* Flicker effect come nel film */
 @keyframes flicker {
-  0%,19%,21%,23%,25%,54%,56%,100% { opacity: 1; }
-  20%,24%,55% { opacity: 0.85; }
+  0%,18%,22%,24%,52%,58%,100% { opacity: 1; }
+  20% { opacity: 0.4; }
+  21% { opacity: 1; }
+  23% { opacity: 0.3; }
+  55% { opacity: 0.5; }
+  56% { opacity: 1; }
 }
 .digit {
   animation: flicker 8s infinite;
@@ -528,5 +532,6 @@ keepScreenOn();
 
 </body>
 </html>
+ 
  
  
