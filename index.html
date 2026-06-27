@@ -112,7 +112,7 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:14px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; font-size:14px; }
 
 /* TIME TRAVEL */
-#timeTravelOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:999; align-items:center; justify-content:center; flex-direction:column; pointer-events:none; }
+#timeTravelOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:40%; z-index:999; align-items:center; justify-content:center; flex-direction:column; pointer-events:none; }
 #timeTravelOverlay.active { display:flex; animation:overlayFlash 4s ease-in-out forwards; }
 @keyframes overlayFlash { 0%{background:rgba(255,255,255,0);} 10%{background:rgba(255,255,255,0.95);} 25%{background:rgba(255,50,0,0.4);} 40%{background:rgba(255,255,255,0.95);} 55%{background:rgba(0,255,68,0.3);} 70%{background:rgba(255,255,255,0.95);} 85%{background:rgba(255,170,0,0.3);} 100%{background:rgba(255,255,255,0);} }
 #timeTravelText { font-size:clamp(18px,6vw,42px); font-weight:bold; color:#ff2200; text-shadow:0 0 20px #ff2200; letter-spacing:4px; text-align:center; animation:textPulse 0.3s ease-in-out infinite; }
@@ -421,4 +421,5 @@ setInterval(updatePresent, 1000);
 </script>
 </body>
 </html>
+ 
  
