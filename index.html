@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTTF Orologio</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d0500; font-family:monospace; padding:8px; }
+.panel { border:2px solid #3d1a00; border-radius:6px; padding:10px; margin-bottom:6px; }
+.row { display:flex; justify-content:space-between; align-items:center; }
+.cell { text-align:center; flex:1; }
+.label { font-size:9px; color:#666; letter-spacing:1px; text-transform:uppercase; }
+.value { font-size:clamp(18px, 5vw, 36px); font-weight:bold; letter-spacing:2px; }
+.ampm-box { display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight:bold; gap:4px; }
+.title { font-size:10px; color:#999; letter-spacing:3px; text-align:center; margin-top:6px; text-transform:uppercase; }
+.red .value { color:#ff2200; }
+.red .ampm-on { color:#ff2200; }
+.red .ampm-off { color:#1a0500; }
+.green .value { color:#00ff44; }
+.green .ampm-on { color:#00ff44; }
+.green .ampm-off { color:#001a08; }
+.amber .value { color:#ffb000; }
+.amber .ampm-on { color:#ffb000; }
+.amber .ampm-off { color:#1a0800; }
+.speed-box { text-align:center; margin-bottom:10px; }
+.speed { color:#00ff44; font-size:clamp(32px, 10vw, 56px); font-weight:bold; }
+.speed-label { color:#ffb000; font-size:12px; margin-top:4px; }
+.countdown { text-align:center; color:#ff2200; font-size:11px; margin:4px 0 10px; }
+</style>
+</head>
+<body>
+
+<div class="speed-box">
+  <div class="speed" id="speed">-- km/h</div>
+  <div class="speed-label" id="speedLabel">Velocita GPS non disponibile</div>
+</div>
+
+<div class="countdown" id="countdown"></div>
+
+<div class="panel red" id="panelDest">
+  <div class="row">
+    <div class="cell"><div class="label">MONTH</div><div class="value" id="dMonth">NOV</div></div>
+    <div class="cell"><div class="label">DAY</div><div class="value" id="dDay">05</div></div>
+    <div class="cell"><div class="label">YEAR</div><div class="value" id="dYear">1955</div></div>
+    <div class="cell"><div class="ampm-box"><span id="dAm" class="ampm-on">AM</span><span id="dPm" class="ampm-off">PM</span></div></div>
+    <div class="cell"><div class="label">HOUR</div><div class="value" id="dHour">06</div></div>
+    <div class="cell"><div class="label">MIN</div><div class="value" id="dMin">00</div></div>
+  </div>
+  <div class="title">Destination Time</div>
+</div>
+
+<div class="panel green">
+  <div class="row">
+    <div class="cell"><div class="label">MONTH</div><div class="value" id="pMonth">---</div></div>
+    <div class="cell"><div class="label">DAY</div><div class="value" id="pDay">--</div></div>
+    <div class="cell"><div class="label">YEAR</div><div class="value" id="pYear">----</div></div>
+    <div class="cell"><div class="ampm-box"><span id="pAm" class="ampm-on">AM</span><span id="pPm" class="ampm-off">PM</span></div></div>
+    <div class="cell"><div class="label">HOUR</div><div class="value" id="pHour">--</div></div>
+    <div class="cell"><div class="label">MIN</div><div class="value" id="pMin">--</div></div>
+  </div>
+  <div class="title">Present Time</div>
+</div>
+
+<div class="panel amber">
+  <div class="row">
+    <div class="cell"><div class="label">MONTH</div><div class="value" id="lMonth">OCT</div></div>
+    <div class="cell"><div class="label">DAY</div><div class="value" id="lDay">26</div></div>
+    <div class="cell"><div class="label">YEAR</div><div class="value" id="lYear">1985</div></div>
+    <div class="cell"><div class="ampm-box"><span id="lAm" class="ampm-on">AM</span><span id="lPm" class="ampm-off">PM</span></div></div>
+    <div class="cell"><div class="label">HOUR</div><div class="value" id="lHour">01</div></div>
+    <div class="cell"><div class="label">MIN</div><div class="value" id="lMin">21</div></div>
+  </div>
+  <div class="title">Last Time Departed</div>
+</div>
+
+<script>
+const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function pad(n){ return String(n).padStart(2,'0'); }
+
+// Destination e Last Departed salvati in localStorage
+let dest = JSON.parse(localStorage.getItem('dest') || '{"m":11,"d":5,"y":1955,"h":6,"min":0}');
+let last = JSON.parse(localStorage.getItem('last') || '{"m":10,"d":26,"y":1985,"h":1,"min":21}');
+
+function setPanel(prefix, data) {
+  const h = data.h === 0 ? 12 : data.h > 12 ? data.h - 12 : data.h;
+  const isAm = data.h < 12;
+  document.getElementById(prefix+'Month').textContent = MONTHS[data.m-1];
+  document.getElementById(prefix+'Day').textContent = pad(data.d);
+  document.getElementById(prefix+'Year').textContent = data.y;
+  document.getElementById(prefix+'Hour').textContent = pad(h);
+  document.getElementById(prefix+'Min').textContent = pad(data.min);
+  document.getElementById(prefix+'Am').className = isAm ? 'ampm-on' : 'ampm-off';
+  document.getElementById(prefix+'Pm').className = !isAm ? 'ampm-on' : 'ampm-off';
+}
+
+function updatePresent() {
+  const now = new Date();
+  setPanel('p', {m: now.getMonth()+1, d: now.getDate(), y: now.getFullYear(), h: now.getHours(), min: now.getMinutes()});
+
+  // Countdown
+  const destDate = new Date(dest.y, dest.m-1, dest.d, dest.h, dest.min);
+  const diff = destDate - now;
+  const abs = Math.abs(diff);
+  const days = Math.floor(abs / 86400000);
+  const hours = Math.floor((abs % 86400000) / 3600000);
+  const mins = Math.floor((abs % 3600000) / 60000);
+  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano ' + days + ' giorni, ' + hours + ' ore e ' + mins + ' minuti alla destinazione';
+  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di ' + days + ' giorni, ' + hours + ' ore e ' + mins + ' minuti';
+  else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
+}
+
+setPanel('d', dest);
+setPanel('l', last);
+updatePresent();
+setInterval(updatePresent, 1000);
+
+// GPS velocita
+if (navigator.geolocation) {
+  navigator.geolocation.watchPosition(function(pos) {
+    if (pos.coords.speed !== null) {
+      const kmh = Math.round(pos.coords.speed * 3.6);
+      document.getElementById('speed').textContent = kmh + ' km/h';
+      if (kmh >= 88) {
+        document.getElementById('speed').style.color = '#ff2200';
+        document.getElementById('speedLabel').textContent = 'VIAGGIO NEL TEMPO IN CORSO!';
+        document.getElementById('speedLabel').style.color = '#ff2200';
+      } else if (kmh >= 70) {
+        document.getElementById('speed').style.color = '#ffb000';
+        document.getElementById('speedLabel').textContent = 'Mancano ' + (88-kmh) + ' km/h alla destinazione temporale!';
+      } else {
+        document.getElementById('speed').style.color = '#00ff44';
+        document.getElementById('speedLabel').textContent = (88-kmh) + ' km/h alla destinazione temporale';
+      }
+    }
+  }, null, {enableHighAccuracy: true});
+}
+</script>
+</body>
+</html>
