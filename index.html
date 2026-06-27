@@ -186,6 +186,92 @@ body {
 .modal-btns { display:flex; gap:8px; margin-top:14px; }
 .modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:10px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; letter-spacing:2px; }
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:10px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; }
+
+@keyframes flash {
+  0%,100% { opacity:1; }
+  50% { opacity:0; background:white; }
+}
+@keyframes scroll-digits {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-200px); }
+}
+@keyframes time-travel {
+  0% { box-shadow: none; }
+  25% { box-shadow: 0 0 40px #fff, 0 0 80px #fff; background: white; }
+  50% { box-shadow: 0 0 20px #ff2200, 0 0 60px #ff2200; }
+  75% { box-shadow: 0 0 40px #fff, 0 0 80px #fff; background: white; }
+  100% { box-shadow: none; }
+}
+@keyframes number-spin {
+  0% { content: '88'; }
+  10% { content: '23'; }
+  20% { content: '67'; }
+  30% { content: '45'; }
+  40% { content: '12'; }
+  50% { content: '99'; }
+  60% { content: '34'; }
+  70% { content: '56'; }
+  80% { content: '78'; }
+  90% { content: '21'; }
+  100% { content: '88'; }
+}
+.time-travel-active {
+  animation: time-travel 0.5s ease-in-out 6;
+}
+.spinning .digit {
+  animation: flash 0.1s linear 10;
+}
+#timeTravelOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255,255,255,0);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Courier New', monospace;
+}
+#timeTravelOverlay.active {
+  display: flex;
+  animation: overlayFlash 3s ease-in-out forwards;
+}
+@keyframes overlayFlash {
+  0% { background: rgba(255,255,255,0); }
+  10% { background: rgba(255,255,255,0.9); }
+  20% { background: rgba(255,50,0,0.3); }
+  30% { background: rgba(255,255,255,0.9); }
+  40% { background: rgba(0,255,68,0.3); }
+  50% { background: rgba(255,255,255,0.95); }
+  60% { background: rgba(255,170,0,0.3); }
+  70% { background: rgba(255,255,255,0.9); }
+  80% { background: rgba(255,50,0,0.2); }
+  90% { background: rgba(255,255,255,0.5); }
+  100% { background: rgba(255,255,255,0); }
+}
+#timeTravelText {
+  font-size: clamp(24px,8vw,56px);
+  font-weight: bold;
+  color: #ff2200;
+  text-shadow: 0 0 20px #ff2200, 0 0 40px #ff2200;
+  letter-spacing: 4px;
+  text-align: center;
+  animation: textPulse 0.3s ease-in-out infinite;
+}
+@keyframes textPulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+#timeTravelEmoji {
+  font-size: clamp(40px,12vw,80px);
+  animation: emojiSpin 0.5s linear infinite;
+  margin-bottom: 10px;
+}
+@keyframes emojiSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.3); }
+  100% { transform: rotate(360deg) scale(1); }
+}
 </style>
 </head>
 <body>
@@ -379,17 +465,75 @@ setPanel('l', last);
 updatePresent();
 setInterval(updatePresent, 1000);
 
+
+let timeTravelPlaying = false;
+
+function triggerTimeTravel() {
+  if (timeTravelPlaying) return;
+  timeTravelPlaying = true;
+
+  // FASE 1: Flash bianco
+  const overlay = document.getElementById('timeTravelOverlay');
+  overlay.classList.add('active');
+
+  // FASE 2: Numeri che scorrono (dopo 500ms)
+  setTimeout(() => {
+    const panels = document.querySelectorAll('.bttf-panel');
+    panels.forEach(p => p.classList.add('spinning'));
+
+    const digits = document.querySelectorAll('.digit');
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const nums = ['00','11','22','33','44','55','66','77','88','99'];
+
+    let count = 0;
+    const interval = setInterval(() => {
+      digits.forEach(d => {
+        if (d.textContent.match(/[0-9]/)) {
+          d.textContent = nums[Math.floor(Math.random()*nums.length)];
+        } else {
+          d.textContent = months[Math.floor(Math.random()*months.length)];
+        }
+      });
+      count++;
+      if (count > 15) {
+        clearInterval(interval);
+        panels.forEach(p => p.classList.remove('spinning'));
+        // Ripristina valori reali
+        setPanel('d', dest);
+        setPanel('l', last);
+        updatePresent();
+      }
+    }, 100);
+  }, 500);
+
+  // FASE 3: Testo VIAGGIO NEL TEMPO (dopo 1s)
+  setTimeout(() => {
+    document.getElementById('timeTravelText').textContent = '⚡ VIAGGIO NEL TEMPO! ⚡';
+  }, 1000);
+
+  // Fine animazione (dopo 4s)
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    timeTravelPlaying = false;
+  }, 4000);
+}
+
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(function(pos) {
     if (pos.coords.speed !== null) {
       const kmh = Math.round(pos.coords.speed * 3.6);
       document.getElementById('speed').textContent = kmh + ' km/h';
-      if (kmh >= 88) { document.getElementById('speed').style.color='#ff2200'; document.getElementById('speedLabel').textContent='⚡ VIAGGIO NEL TEMPO IN CORSO! ⚡'; document.getElementById('speedLabel').style.color='#ff2200'; }
+      if (kmh >= 88) { document.getElementById('speed').style.color='#ff2200'; document.getElementById('speedLabel').textContent='⚡ VIAGGIO NEL TEMPO IN CORSO! ⚡'; triggerTimeTravel(); document.getElementById('speedLabel').style.color='#ff2200'; }
       else if (kmh >= 70) { document.getElementById('speed').style.color='#ffaa00'; document.getElementById('speedLabel').textContent='Mancano '+(88-kmh)+' km/h!'; }
       else { document.getElementById('speed').style.color='#00ff44'; document.getElementById('speedLabel').textContent=(88-kmh)+' km/h alla destinazione temporale'; }
     }
   }, null, {enableHighAccuracy:true});
 }
 </script>
+
+<div id="timeTravelOverlay">
+  <div id="timeTravelEmoji">⚡</div>
+  <div id="timeTravelText">VIAGGIO NEL TEMPO!</div>
+</div>
 </body>
 </html>
