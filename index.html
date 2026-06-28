@@ -193,6 +193,11 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 </div>
 
 <!-- PULSANTI AFFIANCATI -->
+<div style="text-align:center; margin-bottom:3px;">
+  <button onclick="triggerTimeTravel()" style="background:transparent; border:2px solid #ff2200; color:#ff2200; font-family:monospace; font-size:12px; font-weight:bold; padding:8px 20px; border-radius:4px; letter-spacing:2px; width:100%; cursor:pointer;">
+    &#9889; TOCCA PER VIAGGIO NEL TEMPO &#9889;
+  </button>
+</div>
 <div class="btn-row">
   <button class="btn btn-red" onclick="openModal('dest')">&#9889; DESTINATION</button>
   <button class="btn btn-amber" onclick="openModal('last')">&#128336; LAST DEPARTED</button>
@@ -241,7 +246,7 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 </div>
 
 <!-- TIME TRAVEL OVERLAY -->
-<div id="timeTravelOverlay">
+<div id="timeTravelOverlay" onclick="triggerTimeTravel()" style="cursor:pointer;">
   <div id="timeTravelEmoji">&#9889;</div>
   <div id="timeTravelText">VIAGGIO NEL TEMPO!</div>
 </div>
@@ -365,6 +370,7 @@ setInterval(updatePresent, 1000);
 </script>
 </body>
 </html>
+ 
  
  
  
