@@ -71,6 +71,8 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 .form-group { flex:1; }
 .form-group label { display:block; color:#666; font-size:9px; letter-spacing:1px; margin-bottom:3px; }
 .form-group input, .form-group select { width:100%; background:#0d0500; border:1px solid #5a3a00; color:#ffaa00; font-family:'Courier New',monospace; font-size:14px; padding:8px; border-radius:4px; }
+.mbtn { background:#0d0500; border:1px solid #5a3a00; color:#ffaa00; font-family:'Courier New',monospace; font-size:11px; padding:6px 2px; border-radius:3px; cursor:pointer; }
+.mbtn.selected { background:#ff3300; color:#000; border-color:#ff3300; font-weight:bold; }
 .modal-btns { display:flex; gap:8px; margin-top:12px; }
 .modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:14px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; font-size:14px; }
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:14px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; font-size:14px; }
@@ -169,12 +171,21 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
     <div class="modal-title" id="modalTitle">IMPOSTA DATA</div>
     <div class="form-row">
       <div class="form-group"><label>MESE</label>
-        <select id="inMonth">
-          <option value="1">JAN</option><option value="2">FEB</option><option value="3">MAR</option>
-          <option value="4">APR</option><option value="5">MAY</option><option value="6">JUN</option>
-          <option value="7">JUL</option><option value="8">AUG</option><option value="9">SEP</option>
-          <option value="10">OCT</option><option value="11">NOV</option><option value="12">DEC</option>
-        </select>
+        <div id="inMonthGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;">
+          <button type="button" onclick="selMonth(1)" class="mbtn" id="mb1">JAN</button>
+          <button type="button" onclick="selMonth(2)" class="mbtn" id="mb2">FEB</button>
+          <button type="button" onclick="selMonth(3)" class="mbtn" id="mb3">MAR</button>
+          <button type="button" onclick="selMonth(4)" class="mbtn" id="mb4">APR</button>
+          <button type="button" onclick="selMonth(5)" class="mbtn" id="mb5">MAY</button>
+          <button type="button" onclick="selMonth(6)" class="mbtn" id="mb6">JUN</button>
+          <button type="button" onclick="selMonth(7)" class="mbtn" id="mb7">JUL</button>
+          <button type="button" onclick="selMonth(8)" class="mbtn" id="mb8">AUG</button>
+          <button type="button" onclick="selMonth(9)" class="mbtn" id="mb9">SEP</button>
+          <button type="button" onclick="selMonth(10)" class="mbtn" id="mb10">OCT</button>
+          <button type="button" onclick="selMonth(11)" class="mbtn" id="mb11">NOV</button>
+          <button type="button" onclick="selMonth(12)" class="mbtn" id="mb12">DEC</button>
+        </div>
+        <input type="hidden" id="inMonth" value="1">
       </div>
       <div class="form-group"><label>GIORNO</label><input type="number" id="inDay" min="1" max="31" value="1"></div>
       <div class="form-group"><label>ANNO</label><input type="number" id="inYear" min="1885" max="2085" value="1985"></div>
@@ -223,11 +234,19 @@ function updatePresent(){
   else if(diff<0) document.getElementById('countdown').textContent='Destinazione superata di '+days+'g '+hours+'h '+mins+'m';
   else document.getElementById('countdown').textContent='Sei arrivato alla destinazione!';
 }
+var selectedMonth = 1;
+function selMonth(m){
+  selectedMonth = m;
+  document.getElementById('inMonth').value = m;
+  for(var i=1;i<=12;i++){
+    document.getElementById('mb'+i).className = 'mbtn' + (i===m?' selected':'');
+  }
+}
 function openModal(which){
   editingWhich=which;
   var data=which==='dest'?dest:last;
   document.getElementById('modalTitle').textContent=which==='dest'?'DESTINATION TIME':'LAST TIME DEPARTED';
-  document.getElementById('inMonth').value=data.m;
+  document.getElementById('inMonth').value=data.m; selMonth(data.m);
   document.getElementById('inDay').value=data.d;
   document.getElementById('inYear').value=data.y;
   document.getElementById('inHour').value=data.h;
@@ -272,5 +291,6 @@ setInterval(updatePresent,1000);
 </script>
 </body>
 </html>
+ 
  
  
