@@ -6,23 +6,18 @@
 <title>BTTF Orologio</title>
 <style>
 @font-face {
-font-family: 'DSEG7';
-src: url('fonts/DSEG7Classic-Regular.woff2') format('woff2');
+  font-family: 'DSEG7';
+  src: url('fonts/DSEG7Classic-Regular.woff2') format('woff2');
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100vh; }
+html, body { height:100%; }
 body { background:#111; font-family:'Courier New',monospace; padding:4px; display:flex; flex-direction:column; }
-
-
-
-.countdown { text-align:center; color:#ff3300; font-size:clamp(8px,1.5vw,10px); margin:2px 0; letter-spacing:1px; }
-
-/* PANNELLO */
+.countdown { text-align:center; color:#ff3300; font-size:9px; margin:2px 0; letter-spacing:1px; }
 .bttf-panel {
   background:linear-gradient(180deg,#5a5a5a 0%,#3a3a3a 15%,#2e2e2e 50%,#3a3a3a 85%,#4a4a4a 100%);
-  border:2px solid #666; border-radius:5px; margin-bottom:2px; padding:2px 6px 2px;
-  max-height:24vh; overflow:hidden;
+  border:2px solid #666; border-radius:5px; margin-bottom:3px; padding:3px 6px 2px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 2px 6px rgba(0,0,0,0.8);
+  flex:1;
 }
 .labels-row { display:flex; margin-bottom:2px; }
 .label-cell { flex:1; text-align:center; }
@@ -30,60 +25,45 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 .label-cell.ampm-cell { flex:0.45; }
 .label-cell.small-cell { flex:0.85; }
 .label-tag { display:inline-block; background:#5a0000; color:#ddd; font-size:clamp(5px,1.2vw,8px); font-weight:bold; letter-spacing:1px; padding:1px 3px; border:1px solid #800000; border-radius:2px; text-transform:uppercase; }
-
 .display-row { display:flex; align-items:center; gap:2px; }
 .digit-box { flex:1; background:#000; border:1px solid #222; border-radius:2px; padding:2px 1px; text-align:center; box-shadow:inset 0 0 6px rgba(0,0,0,0.9); }
 .digit-box.year-box { flex:1.6; }
 .digit-box.small-box { flex:0.85; }
-
 @keyframes flicker {
   0%,17%,19%,21%,23%,51%,57%,100%{opacity:1;}
   18%{opacity:0.2;} 20%{opacity:0.9;} 22%{opacity:0.1;} 52%{opacity:0.3;} 54%{opacity:0.2;} 56%{opacity:1;}
 }
-.digit { font-family:'DSEG7','Courier New',monospace; font-size:clamp(16px,4.5vw,36px); font-weight:bold; letter-spacing:1px; line-height:1; display:block; animation:flicker 7s infinite; }
-.red .digit { animation-delay:0.1s; }
-.green .digit { animation-delay:0.5s; }
-.amber .digit { animation-delay:0.9s; }
-
+.digit { font-family:'DSEG7','Courier New',monospace; font-size:clamp(16px,4.5vw,38px); font-weight:bold; letter-spacing:1px; line-height:1; display:block; animation:flicker 7s infinite; }
+.red .digit { animation-delay:0.1s; color:#ff3300; text-shadow:0 0 8px #ff3300; }
+.green .digit { animation-delay:0.5s; color:#00ff44; text-shadow:0 0 8px #00ff44; }
+.amber .digit { animation-delay:0.9s; color:#ffaa00; text-shadow:0 0 8px #ffaa00; }
+.red .digit-box { background:#050000; }
+.green .digit-box { background:#000500; }
+.amber .digit-box { background:#050200; }
 .ampm-box { flex:0.45; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:0 1px; }
 .ampm-row { display:flex; align-items:center; gap:2px; }
 .ampm-dot { width:clamp(5px,1.2vw,8px); height:clamp(5px,1.2vw,8px); border-radius:50%; border:1px solid #333; }
 .ampm-label { font-size:clamp(6px,1.2vw,9px); font-weight:bold; color:#888; }
-.colon-sep { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; padding:0 1px; }
-.colon-dot { width:clamp(3px,0.8vw,5px); height:clamp(3px,0.8vw,5px); border-radius:50%; }
-.panel-title { text-align:center; font-size:clamp(6px,1.5vw,9px); font-weight:bold; letter-spacing:clamp(2px,0.5vw,4px); color:#fff; text-transform:uppercase; background:rgba(0,0,0,0.3); padding:1px 0; border-top:1px solid #555; margin-top:2px; }
-
-/* COLORI */
-.red .digit { color:#ff3300; text-shadow:0 0 8px #ff3300; }
-.red .digit-box { background:#050000; }
 .red .ampm-dot.on { background:#ff3300; box-shadow:0 0 5px #ff3300; border-color:#ff3300; }
 .red .ampm-dot.off { background:#1a0000; }
-.red .colon-dot { background:#ff3300; box-shadow:0 0 3px #ff3300; }
-.red .label-tag { background:#5a0000; border-color:#800000; }
-
-.green .digit { color:#00ff44; text-shadow:0 0 8px #00ff44; }
-.green .digit-box { background:#000500; }
 .green .ampm-dot.on { background:#00ff44; box-shadow:0 0 5px #00ff44; border-color:#00ff44; }
 .green .ampm-dot.off { background:#001a00; }
-.green .colon-dot { background:#00ff44; box-shadow:0 0 3px #00ff44; }
-.green .label-tag { background:#005a00; border-color:#008000; }
-
-.amber .digit { color:#ffaa00; text-shadow:0 0 8px #ffaa00; }
-.amber .digit-box { background:#050200; }
 .amber .ampm-dot.on { background:#ffaa00; box-shadow:0 0 5px #ffaa00; border-color:#ffaa00; }
 .amber .ampm-dot.off { background:#1a0a00; }
-.amber .colon-dot { background:#ffaa00; box-shadow:0 0 3px #ffaa00; }
+.colon-sep { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; padding:0 1px; }
+.colon-dot { width:clamp(3px,0.8vw,5px); height:clamp(3px,0.8vw,5px); border-radius:50%; }
+.red .colon-dot { background:#ff3300; }
+.green .colon-dot { background:#00ff44; }
+.amber .colon-dot { background:#ffaa00; }
+.red .label-tag { background:#5a0000; border-color:#800000; }
+.green .label-tag { background:#005a00; border-color:#008000; }
 .amber .label-tag { background:#5a3000; border-color:#804000; }
-
-/* PULSANTI AFFIANCATI */
-.btn-row { display:flex; gap:4px; margin-top:3px; }
+.panel-title { text-align:center; font-size:clamp(6px,1.5vw,9px); font-weight:bold; letter-spacing:clamp(2px,0.5vw,4px); color:#fff; text-transform:uppercase; background:rgba(0,0,0,0.3); padding:1px 0; border-top:1px solid #555; margin-top:2px; }
+.btn-row { display:flex; gap:4px; margin-top:2px; }
 .btn { border:2px solid; padding:8px 4px; font-family:'Courier New',monospace; font-size:clamp(8px,1.5vw,11px); font-weight:bold; cursor:pointer; border-radius:4px; flex:1; letter-spacing:1px; background:transparent; text-transform:uppercase; }
 .btn-red { color:#ff3300; border-color:#ff3300; }
 .btn-amber { color:#ffaa00; border-color:#ffaa00; }
-.btn-red:active { background:#1a0000; }
-.btn-amber:active { background:#1a0a00; }
-
-/* MODAL */
+.travel-btn { width:100%; background:transparent; border:2px solid #ff2200; color:#ff2200; font-family:'Courier New',monospace; font-size:12px; font-weight:bold; padding:8px; border-radius:4px; letter-spacing:2px; cursor:pointer; margin-bottom:3px; }
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:100; align-items:center; justify-content:center; }
 .modal.open { display:flex; }
 .modal-box { background:#1a0a00; border:2px solid #5a3a00; border-radius:8px; padding:16px; width:92%; max-width:380px; }
@@ -95,9 +75,7 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 .modal-btns { display:flex; gap:8px; margin-top:12px; }
 .modal-save { flex:1; background:#ff3300; color:#000; border:none; padding:14px; font-family:'Courier New',monospace; font-weight:bold; cursor:pointer; border-radius:4px; font-size:14px; }
 .modal-cancel { flex:1; background:#333; color:#fff; border:none; padding:14px; font-family:'Courier New',monospace; cursor:pointer; border-radius:4px; font-size:14px; }
-
-/* TIME TRAVEL */
-#timeTravelOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:40%; z-index:999; align-items:center; justify-content:center; flex-direction:column; pointer-events:none; }
+#timeTravelOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:999; align-items:center; justify-content:center; flex-direction:column; pointer-events:none; }
 #timeTravelOverlay.active { display:flex; animation:overlayFlash 4s ease-in-out forwards; }
 @keyframes overlayFlash { 0%{background:rgba(255,255,255,0);} 10%{background:rgba(255,255,255,0.95);} 25%{background:rgba(255,50,0,0.4);} 40%{background:rgba(255,255,255,0.95);} 55%{background:rgba(0,255,68,0.3);} 70%{background:rgba(255,255,255,0.95);} 85%{background:rgba(255,170,0,0.3);} 100%{background:rgba(255,255,255,0);} }
 #timeTravelText { font-size:clamp(18px,6vw,42px); font-weight:bold; color:#ff2200; text-shadow:0 0 20px #ff2200; letter-spacing:4px; text-align:center; animation:textPulse 0.3s ease-in-out infinite; }
@@ -108,13 +86,8 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 @keyframes digitFlash { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
 </style>
 </head>
-<body onclick="triggerTimeTravel()">
-
-
-
+<body>
 <div class="countdown" id="countdown"></div>
-
-<!-- DESTINATION TIME -->
 <div class="bttf-panel red">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -139,8 +112,6 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
   </div>
   <div class="panel-title">Destination Time</div>
 </div>
-
-<!-- PRESENT TIME -->
 <div class="bttf-panel green">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -152,21 +123,19 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
     <div class="label-cell small-cell"><span class="label-tag">MIN</span></div>
   </div>
   <div class="display-row">
-    <div class="digit-box"><span class="digit" id="pMonth">---</span></div>
-    <div class="digit-box"><span class="digit" id="pDay">--</span></div>
-    <div class="digit-box year-box"><span class="digit" id="pYear">----</span></div>
+    <div class="digit-box"><span class="digit" id="pMonth">JUN</span></div>
+    <div class="digit-box"><span class="digit" id="pDay">28</span></div>
+    <div class="digit-box year-box"><span class="digit" id="pYear">2026</span></div>
     <div class="ampm-box">
       <div class="ampm-row"><div class="ampm-dot off" id="pAmDot"></div><span class="ampm-label">AM</span></div>
       <div class="ampm-row"><div class="ampm-dot on" id="pPmDot"></div><span class="ampm-label">PM</span></div>
     </div>
-    <div class="digit-box small-box"><span class="digit" id="pHour">--</span></div>
+    <div class="digit-box small-box"><span class="digit" id="pHour">12</span></div>
     <div class="colon-sep"><div class="colon-dot"></div><div class="colon-dot"></div></div>
-    <div class="digit-box small-box"><span class="digit" id="pMin">--</span></div>
+    <div class="digit-box small-box"><span class="digit" id="pMin">00</span></div>
   </div>
   <div class="panel-title">Present Time</div>
 </div>
-
-<!-- LAST TIME DEPARTED -->
 <div class="bttf-panel amber">
   <div class="labels-row">
     <div class="label-cell"><span class="label-tag">MONTH</span></div>
@@ -191,52 +160,29 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
   </div>
   <div class="panel-title">Last Time Departed</div>
 </div>
-
-<!-- PULSANTI AFFIANCATI -->
-<div style="text-align:center; margin-bottom:3px;">
-  <button onclick="triggerTimeTravel()" style="background:transparent; border:2px solid #ff2200; color:#ff2200; font-family:monospace; font-size:12px; font-weight:bold; padding:8px 20px; border-radius:4px; letter-spacing:2px; width:100%; cursor:pointer;">
-    &#9889; TOCCA PER VIAGGIO NEL TEMPO &#9889;
-  </button>
-</div>
+<button class="travel-btn" onclick="triggerTimeTravel()">&#9889; VIAGGIO NEL TEMPO &#9889;</button>
 <div class="btn-row">
   <button class="btn btn-red" onclick="openModal('dest')">&#9889; DESTINATION</button>
   <button class="btn btn-amber" onclick="openModal('last')">&#128336; LAST DEPARTED</button>
 </div>
-
-<!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <div class="modal-title" id="modalTitle">IMPOSTA DATA</div>
     <div class="form-row">
-      <div class="form-group">
-        <label>MESE</label>
+      <div class="form-group"><label>MESE</label>
         <select id="inMonth">
-          <option value="1">JAN</option><option value="2">FEB</option>
-          <option value="3">MAR</option><option value="4">APR</option>
-          <option value="5">MAY</option><option value="6">JUN</option>
-          <option value="7">JUL</option><option value="8">AUG</option>
-          <option value="9">SEP</option><option value="10">OCT</option>
-          <option value="11">NOV</option><option value="12">DEC</option>
+          <option value="1">JAN</option><option value="2">FEB</option><option value="3">MAR</option>
+          <option value="4">APR</option><option value="5">MAY</option><option value="6">JUN</option>
+          <option value="7">JUL</option><option value="8">AUG</option><option value="9">SEP</option>
+          <option value="10">OCT</option><option value="11">NOV</option><option value="12">DEC</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>GIORNO</label>
-        <input type="number" id="inDay" min="1" max="31" value="1">
-      </div>
-      <div class="form-group">
-        <label>ANNO</label>
-        <input type="number" id="inYear" min="1885" max="2085" value="1985">
-      </div>
+      <div class="form-group"><label>GIORNO</label><input type="number" id="inDay" min="1" max="31" value="1"></div>
+      <div class="form-group"><label>ANNO</label><input type="number" id="inYear" min="1885" max="2085" value="1985"></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label>ORA (0-23)</label>
-        <input type="number" id="inHour" min="0" max="23" value="0">
-      </div>
-      <div class="form-group">
-        <label>MINUTI</label>
-        <input type="number" id="inMin" min="0" max="59" value="0">
-      </div>
+      <div class="form-group"><label>ORA (0-23)</label><input type="number" id="inHour" min="0" max="23" value="0"></div>
+      <div class="form-group"><label>MINUTI</label><input type="number" id="inMin" min="0" max="59" value="0"></div>
     </div>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">ANNULLA</button>
@@ -244,140 +190,87 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
     </div>
   </div>
 </div>
-
-<!-- TIME TRAVEL OVERLAY -->
-<div id="timeTravelOverlay" onclick="triggerTimeTravel()" style="cursor:pointer;">
+<div id="timeTravelOverlay">
   <div id="timeTravelEmoji">&#9889;</div>
   <div id="timeTravelText">VIAGGIO NEL TEMPO!</div>
 </div>
-
 <script>
-const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-function pad(n){ return String(n).padStart(2,'0'); }
-
-var dest = JSON.parse(localStorage.getItem('bttf_dest') || '{"m":11,"d":5,"y":1955,"h":6,"min":0}');
-var last = JSON.parse(localStorage.getItem('bttf_last') || '{"m":10,"d":26,"y":1985,"h":1,"min":21}');
-var editingWhich = 'dest';
-var currentSpeed = 0;
-var lastSpeed = 0;
-var lastSpeedTime = Date.now();
-
-function setPanel(prefix, data) {
-  var h = data.h === 0 ? 12 : data.h > 12 ? data.h - 12 : data.h;
-  var isAm = data.h < 12;
-  document.getElementById(prefix+'Month').textContent = MONTHS[data.m-1];
-  document.getElementById(prefix+'Day').textContent = pad(data.d);
-  document.getElementById(prefix+'Year').textContent = data.y;
-  document.getElementById(prefix+'Hour').textContent = pad(h);
-  document.getElementById(prefix+'Min').textContent = pad(data.min);
-  document.getElementById(prefix+'AmDot').className = 'ampm-dot '+(isAm?'on':'off');
-  document.getElementById(prefix+'PmDot').className = 'ampm-dot '+(!isAm?'on':'off');
+var MONTHS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function pad(n){return String(n).padStart(2,'0');}
+var dest=JSON.parse(localStorage.getItem('bttf_dest')||'{"m":11,"d":5,"y":1955,"h":6,"min":0}');
+var last=JSON.parse(localStorage.getItem('bttf_last')||'{"m":10,"d":26,"y":1985,"h":1,"min":21}');
+var editingWhich='dest';
+function setPanel(prefix,data){
+  var h=data.h===0?12:data.h>12?data.h-12:data.h;
+  var isAm=data.h<12;
+  document.getElementById(prefix+'Month').textContent=MONTHS[data.m-1];
+  document.getElementById(prefix+'Day').textContent=pad(data.d);
+  document.getElementById(prefix+'Year').textContent=data.y;
+  document.getElementById(prefix+'Hour').textContent=pad(h);
+  document.getElementById(prefix+'Min').textContent=pad(data.min);
+  document.getElementById(prefix+'AmDot').className='ampm-dot '+(isAm?'on':'off');
+  document.getElementById(prefix+'PmDot').className='ampm-dot '+(!isAm?'on':'off');
 }
-
-function updatePresent() {
-  var now = new Date();
-  setPanel('p', {m:now.getMonth()+1, d:now.getDate(), y:now.getFullYear(), h:now.getHours(), min:now.getMinutes()});
-  var destDate = new Date(dest.y, dest.m-1, dest.d, dest.h, dest.min);
-  var diff = destDate - now;
-  var abs = Math.abs(diff);
-  var days = Math.floor(abs/86400000);
-  var hours = Math.floor((abs%86400000)/3600000);
-  var mins = Math.floor((abs%3600000)/60000);
-  if (diff > 0) document.getElementById('countdown').textContent = 'Mancano '+days+'g '+hours+'h '+mins+'m alla destinazione';
-  else if (diff < 0) document.getElementById('countdown').textContent = 'Destinazione superata di '+days+'g '+hours+'h '+mins+'m';
-  else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
+function updatePresent(){
+  var now=new Date();
+  setPanel('p',{m:now.getMonth()+1,d:now.getDate(),y:now.getFullYear(),h:now.getHours(),min:now.getMinutes()});
+  var destDate=new Date(dest.y,dest.m-1,dest.d,dest.h,dest.min);
+  var diff=destDate-now;
+  var abs=Math.abs(diff);
+  var days=Math.floor(abs/86400000);
+  var hours=Math.floor((abs%86400000)/3600000);
+  var mins=Math.floor((abs%3600000)/60000);
+  if(diff>0) document.getElementById('countdown').textContent='Mancano '+days+'g '+hours+'h '+mins+'m alla destinazione';
+  else if(diff<0) document.getElementById('countdown').textContent='Destinazione superata di '+days+'g '+hours+'h '+mins+'m';
+  else document.getElementById('countdown').textContent='Sei arrivato alla destinazione!';
 }
-
-  } else if (kmh >= 88) {
-    document.getElementById('timeToDisplay').textContent = '00';
-  }
-  lastSpeed = kmh;
-  lastSpeedTime = now;
-
-  // Colori
-  if (kmh >= 88) {
-    document.getElementById('speed').style.color = '#ff2200';
-    document.getElementById('gwDisplay').style.color = '#ff2200';
-    document.getElementById('timeToDisplay').style.color = '#ff2200';
-    triggerTimeTravel();
-  } else if (kmh >= 70) {
-    document.getElementById('speed').style.color = '#ffaa00';
-    document.getElementById('gwDisplay').style.color = '#ffaa00';
-  } else {
-    document.getElementById('speed').style.color = '#00ff44';
-    document.getElementById('gwDisplay').style.color = '#ff9900';
-    document.getElementById('timeToDisplay').style.color = '#ff2200';
-  }
-}
-
-function openModal(which) {
-  editingWhich = which;
-  var data = which === 'dest' ? dest : last;
-  document.getElementById('modalTitle').textContent = which === 'dest' ? 'DESTINATION TIME' : 'LAST TIME DEPARTED';
-  document.getElementById('inMonth').value = data.m;
-  document.getElementById('inDay').value = data.d;
-  document.getElementById('inYear').value = data.y;
-  document.getElementById('inHour').value = data.h;
-  document.getElementById('inMin').value = data.min;
+function openModal(which){
+  editingWhich=which;
+  var data=which==='dest'?dest:last;
+  document.getElementById('modalTitle').textContent=which==='dest'?'DESTINATION TIME':'LAST TIME DEPARTED';
+  document.getElementById('inMonth').value=data.m;
+  document.getElementById('inDay').value=data.d;
+  document.getElementById('inYear').value=data.y;
+  document.getElementById('inHour').value=data.h;
+  document.getElementById('inMin').value=data.min;
   document.getElementById('modal').classList.add('open');
 }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function saveModal() {
-  var data = { m:parseInt(document.getElementById('inMonth').value), d:parseInt(document.getElementById('inDay').value), y:parseInt(document.getElementById('inYear').value), h:parseInt(document.getElementById('inHour').value), min:parseInt(document.getElementById('inMin').value) };
-  if (editingWhich === 'dest') { dest=data; localStorage.setItem('bttf_dest',JSON.stringify(data)); setPanel('d',data); }
-  else { last=data; localStorage.setItem('bttf_last',JSON.stringify(data)); setPanel('l',data); }
-  closeModal(); updatePresent();
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function saveModal(){
+  var data={m:parseInt(document.getElementById('inMonth').value),d:parseInt(document.getElementById('inDay').value),y:parseInt(document.getElementById('inYear').value),h:parseInt(document.getElementById('inHour').value),min:parseInt(document.getElementById('inMin').value)};
+  if(editingWhich==='dest'){dest=data;localStorage.setItem('bttf_dest',JSON.stringify(data));setPanel('d',data);}
+  else{last=data;localStorage.setItem('bttf_last',JSON.stringify(data));setPanel('l',data);}
+  closeModal();updatePresent();
 }
-
-var timeTravelPlaying = false;
-function triggerTimeTravel() {
-  if (timeTravelPlaying) return;
-  timeTravelPlaying = true;
-  var overlay = document.getElementById('timeTravelOverlay');
+var timeTravelPlaying=false;
+function triggerTimeTravel(){
+  if(timeTravelPlaying)return;
+  timeTravelPlaying=true;
+  var overlay=document.getElementById('timeTravelOverlay');
   overlay.classList.add('active');
-  var panels = document.querySelectorAll('.bttf-panel');
-  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  var nums = ['00','11','22','33','44','55','66','77','88','99'];
-  setTimeout(function() {
-    panels.forEach(function(p){ p.classList.add('spinning'); });
-    var digits = document.querySelectorAll('.digit');
-    var count = 0;
-    var interval = setInterval(function() {
-      digits.forEach(function(d) {
-        if (d.textContent.match(/[0-9]/)) d.textContent = nums[Math.floor(Math.random()*nums.length)];
-        else d.textContent = months[Math.floor(Math.random()*months.length)];
+  var panels=document.querySelectorAll('.bttf-panel');
+  var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var nums=['00','11','22','33','44','55','66','77','88','99'];
+  setTimeout(function(){
+    panels.forEach(function(p){p.classList.add('spinning');});
+    var digits=document.querySelectorAll('.digit');
+    var count=0;
+    var interval=setInterval(function(){
+      digits.forEach(function(d){
+        if(d.textContent.match(/[0-9]/))d.textContent=nums[Math.floor(Math.random()*nums.length)];
+        else d.textContent=months[Math.floor(Math.random()*months.length)];
       });
       count++;
-      if (count > 20) {
-        clearInterval(interval);
-        panels.forEach(function(p){ p.classList.remove('spinning'); });
-        setPanel('d',dest); setPanel('l',last); updatePresent();
-      }
-    }, 100);
-  }, 300);
-  setTimeout(function() { overlay.classList.remove('active'); timeTravelPlaying = false; }, 4500);
+      if(count>20){clearInterval(interval);panels.forEach(function(p){p.classList.remove('spinning');});setPanel('d',dest);setPanel('l',last);updatePresent();}
+    },100);
+  },300);
+  setTimeout(function(){overlay.classList.remove('active');timeTravelPlaying=false;},4500);
 }
-
-async function keepScreenOn() {
-  try { if ('wakeLock' in navigator) { await navigator.wakeLock.request('screen'); } } catch(e) {}
-}
+async function keepScreenOn(){try{if('wakeLock'in navigator){await navigator.wakeLock.request('screen');}}catch(e){}}
 keepScreenOn();
-
-
-
-setPanel('d', dest); setPanel('l', last); updatePresent();
-setInterval(updatePresent, 1000);
+setPanel('d',dest);setPanel('l',last);updatePresent();
+setInterval(updatePresent,1000);
 </script>
 </body>
 </html>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
