@@ -13,30 +13,15 @@ src: url('fonts/DSEG7Classic-Regular.woff2') format('woff2');
 html, body { height:100vh; }
 body { background:#111; font-family:'Courier New',monospace; padding:4px; display:flex; flex-direction:column; }
 
-/* TOP BAR velocità + GW + tempo */
-.top-bar {
-  display:flex; align-items:center; justify-content:space-between;
-  background:#0a0a0a; border:1px solid #333; border-radius:4px;
-  padding:3px 8px; margin-bottom:3px; gap:6px;
-}
-.top-item { text-align:center; flex:1; }
-.top-value { font-family:'DSEG7','Courier New',monospace; font-size:clamp(16px,4vw,28px); font-weight:bold; line-height:1; }
-.top-label { font-size:clamp(7px,1.2vw,9px); letter-spacing:1px; margin-top:1px; }
-.top-divider { width:1px; background:#333; height:30px; }
-.speed-val { color:#00ff44; }
-.gw-val { color:#ff9900; }
-.time-val { color:#ff2200; }
-.speed-lbl { color:#00ff44; }
-.gw-lbl { color:#ff9900; }
-.time-lbl { color:#ff2200; }
+
 
 .countdown { text-align:center; color:#ff3300; font-size:clamp(8px,1.5vw,10px); margin:2px 0; letter-spacing:1px; }
 
 /* PANNELLO */
 .bttf-panel {
   background:linear-gradient(180deg,#5a5a5a 0%,#3a3a3a 15%,#2e2e2e 50%,#3a3a3a 85%,#4a4a4a 100%);
-  border:2px solid #666; border-radius:5px; margin-bottom:3px; padding:3px 6px 2px;
-  max-height:22vh; overflow:hidden;
+  border:2px solid #666; border-radius:5px; margin-bottom:2px; padding:2px 6px 2px;
+  max-height:24vh; overflow:hidden;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 2px 6px rgba(0,0,0,0.8);
 }
 .labels-row { display:flex; margin-bottom:2px; }
@@ -123,25 +108,9 @@ body { background:#111; font-family:'Courier New',monospace; padding:4px; displa
 @keyframes digitFlash { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
 </style>
 </head>
-<body>
+<body onclick="triggerTimeTravel()">
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <div class="top-item">
-    <div class="top-value speed-val" id="speed">--</div>
-    <div class="top-label speed-lbl">km/h</div>
-  </div>
-  <div class="top-divider"></div>
-  <div class="top-item">
-    <div class="top-value gw-val" id="gwDisplay">0.00</div>
-    <div class="top-label gw-lbl">GigaWatt</div>
-  </div>
-  <div class="top-divider"></div>
-  <div class="top-item">
-    <div class="top-value time-val" id="timeToDisplay">--</div>
-    <div class="top-label time-lbl">sec a 88</div>
-  </div>
-</div>
+
 
 <div class="countdown" id="countdown"></div>
 
@@ -314,25 +283,6 @@ function updatePresent() {
   else document.getElementById('countdown').textContent = 'Sei arrivato alla destinazione!';
 }
 
-function updateSpeedDisplay(kmh) {
-  currentSpeed = kmh;
-  document.getElementById('speed').textContent = Math.round(kmh);
-
-  // GigaWatt — scala da 0 a 1.21 GW tra 0 e 88 km/h
-  var gw = Math.min(1.21, (kmh / 88) * 1.21);
-  document.getElementById('gwDisplay').textContent = gw.toFixed(2);
-
-  // Tempo stimato a 88 km/h basato sull'accelerazione attuale
-  var now = Date.now();
-  var dt = (now - lastSpeedTime) / 1000;
-  if (dt > 0.5 && kmh < 88) {
-    var accel = (kmh - lastSpeed) / dt; // km/h per secondo
-    if (accel > 0.1) {
-      var secTo88 = (88 - kmh) / accel;
-      document.getElementById('timeToDisplay').textContent = Math.round(secTo88);
-    } else {
-      document.getElementById('timeToDisplay').textContent = '--';
-    }
   } else if (kmh >= 88) {
     document.getElementById('timeToDisplay').textContent = '00';
   }
@@ -408,19 +358,14 @@ async function keepScreenOn() {
 }
 keepScreenOn();
 
-if (navigator.geolocation) {
-  navigator.geolocation.watchPosition(function(pos) {
-    if (pos.coords.speed !== null) {
-      updateSpeedDisplay(pos.coords.speed * 3.6);
-    }
-  }, null, {enableHighAccuracy:true});
-}
+
 
 setPanel('d', dest); setPanel('l', last); updatePresent();
 setInterval(updatePresent, 1000);
 </script>
 </body>
 </html>
+ 
  
  
  
